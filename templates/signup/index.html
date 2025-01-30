@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/signup.css') }}" /> 
+    <title>test</title>
+</head>
+
+<body>
+    <h1>Регистрация</h1>
+    <script src="/static/auth/signup.js"></script>
+    <script src="/static/StaticLib.js"></script>
+    <div class="signup">
+        <div class="email">
+            <p>E-mail</p>
+            <input type="text" id="email" name="email"/>
+        </div>
+
+        <div class="username">
+            <p>Имя пользователя</p>
+            <input type="text" id="username" name="email" /> 
+        </div>
+
+        <div class="accountname">
+            <p>Имя аккаунта</p>
+            <input type="text" id="accountname" name="email" /> 
+        </div>
+    
+        <div class="password">
+            <p>Пароль</p>
+            <input type="password" id="password" name="email" /> 
+        </div>
+    </div> 
+    <div class="error">
+        <p id="errorText"></p>
+    </div>
+
+    <button class="signupButton" onclick="signup()"> Создать аккаунт </button>
+</body>
+</html>
