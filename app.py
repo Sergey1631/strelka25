@@ -7,7 +7,7 @@ from PIL import Image
 #from werkzeusg.utils import secure_filename
 
 UPLOAD_FOLDER = 'static\\images\\profilePics'
-
+dfg
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['account_url'] = 'static\\account\\'
