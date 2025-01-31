@@ -3,13 +3,11 @@ async function signup()
     var email = document.getElementById('email').value;
     var password = document.getElementById('password').value; 
     var username = document.getElementById('username').value; 
-    var accountname = document.getElementById('accountname').value; 
-        
+
     let data = JSON.stringify({ 
         email: email,
         password: password,
-        username:username,
-        accountname:accountname })
+        username:username})
     var url = '/signup'
     
     let response = await fetch(url, {
@@ -34,7 +32,7 @@ async function signup()
     console.log(result)
     
     if (error!=""){
-        StaticsLib.setErrorText(error)
+        PageHelper.setErrorText(error)
     }
     
     if(response.redirected){

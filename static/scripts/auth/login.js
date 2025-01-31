@@ -1,12 +1,12 @@
 async function login()
 {
-    var accountname = document.getElementById('accountname').value;
+    var email = document.getElementById('email').value;
     var password = document.getElementById('password').value; 
     var url = '/login'
     
     let data = JSON.stringify({ 
       password: password,
-      accountname:accountname })
+      email:email })
     
     let response = await fetch(url, {
       headers: {
@@ -30,10 +30,14 @@ async function login()
     console.log(result)
     
     if (error!=""){
-        StaticsLib.setErrorText(error)
+        PageHelper.setErrorText(error)
     }
     
     if(response.redirected){
         window.location.href = response.url;
     }
+}
+function redirectToSignup(){
+  signUpPath = "/signup"
+  window.location.replace(signUpPath)
 }

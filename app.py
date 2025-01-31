@@ -7,7 +7,7 @@ from PIL import Image
 #from werkzeusg.utils import secure_filename
 
 UPLOAD_FOLDER = 'static\\images\\profilePics'
-dfg
+
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['account_url'] = 'static\\account\\'
@@ -15,40 +15,46 @@ app.config['profilePicsPath'] = 'static\\images\\profilePics\\'
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
+
+#-------------------------------
+def makeError(errorString):
+    data = { 
+        "error" : errorString
+    } 
+    return data
+
+#------------------------------
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         jsonData = request.get_json()
         
         password = jsonData['password']
-        accountname = jsonData['accountname']
+        email = jsonData['email']
         
         connection = sqlite3.connect('database.db')
 
         cursor = connection.cursor()
-        user = (accountname, password)
+        user = (email, password)
         
-        cursor.execute('SELECT EXISTS(SELECT 1 FROM users WHERE accountname=? AND password=?)', user)
-        isExists = cursor.fetchone() == (1,)
+        cursor.execute('SELECT EXISTS(SELECT 1 FROM users WHERE email=? AND password=?)', user)
+        isUserExists = cursor.fetchone() == (1,)
 
-        connection.commit()
-        connection.close()
+        if not isUserExists:
+            return makeError("Неправильные эл.почта или пароль")
+        
+        cursor.execute('SELECT id FROM users WHERE email=? AND password=?', user)
+        id = str(cursor.fetchone()[0])
+        print(id)
+        isUserExists = cursor.fetchone() == (1,)
 
-        errorString = ""
+        session['user_id'] = id
+        resp = redirect("/profile")
+        resp.set_cookie('user_id', id)
+        return resp 
 
-        if isExists:
-            resp = redirect("/profile")
-            resp.set_cookie('accountname', accountname)
-
-            session['accountname'] = accountname
-            print(session['accountname'])
-            return resp 
-        else:
-            data = { 
-                "error" : errorString, 
-            } 
-            return data
-    return render_template("index.html")
+    return render_template("login.html")
 
 @app.route('/signup',  methods=['GET', 'POST'])
 def signUp():
@@ -57,40 +63,42 @@ def signUp():
         
         email = jsonData['email']
         password = jsonData['password']
-        accountname = jsonData['accountname']
         username = jsonData['username']
         
-        errorString = ""
-        
         connection = sqlite3.connect('database.db')
-
         cursor = connection.cursor()
 
         user = (email, password, username)
         
+        if not(email and password and username):
+            return makeError("Введены не все данные")
+        
+        if '@' not in email or email[0] == '@':
+            return makeError('Неправильный адрес электронной почты')
+        
+        if len(password) < 8:
+            return makeError("Пароль слишком короткий")
+
         cursor.execute('SELECT EXISTS(SELECT 1 FROM users WHERE email=?)', [email])
         isExists = cursor.fetchone() == (1,)
 
         if isExists:
-            errorString = "UserExists"
-        else:     
-            cursor.execute('INSERT INTO users (email, password, username) VALUES (?, ?, ?)', user)
+            return makeError("Пользователь уже существует")    
+    
+        cursor.execute('INSERT INTO users (email, password, username) VALUES (?, ?, ?)', user)
         
         connection.commit()
+        
+        user_id = cursor.lastrowid
+        print(user_id)
+        resp = redirect("/")
+        resp.set_cookie('user_id', user_id)
+        session['user_id'] = user_id
+
         connection.close()
 
-        if errorString:
-            data = { 
-                "error" : errorString, 
-            } 
-            return data
-        else:
-            resp = redirect("/")
-            #resp.set_cookie('accountname', accountname)
-            session['accountname'] = accountname
-            print(session['accountname'])
-            return resp
-    return render_template("signup/index.html")
+        return resp
+    return render_template("/signup.html")
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
