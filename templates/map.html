@@ -1,8 +1,24 @@
+<!DOCTYPE html>
+<html>
 <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/map.css') }}" /> 
     <script src="https://api-maps.yandex.ru/2.1/?apikey=d837f1b4-7457-46b1-84b4-9f1b26718d5b&lang=ru_RU" type="text/javascript"></script>
     <script src="/static/scripts/map.js"></script>
+
 </head>
 
 <body>
-    <div id="map" style="width: 800px; height: 600px"></div>
+    <p class="publicRoutes">Публичные маршруты</p>
+    <div class="routeInfo">
+        <div class="routeList">
+            <button>МАРШРУТ</button>
+        </div>
+        <div id="map" style="width: 700px; height: 500px"></div>
+        <button>МАРШРУТ</button>
+    </div>
+
 </body>
+</html>

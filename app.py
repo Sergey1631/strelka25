@@ -89,7 +89,7 @@ def signUp():
         
         connection.commit()
         
-        user_id = cursor.lastrowid
+        user_id = str(cursor.lastrowid)
         print(user_id)
         resp = redirect("/")
         resp.set_cookie('user_id', user_id)
