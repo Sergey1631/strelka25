@@ -1,16 +1,36 @@
+body {
+    display:flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: rgb(45, 45, 45);
+}
+
 .publicRoutes {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 20px;
 }
-.routeInfo .routeList{
-    width: 150px;
+.main .routeList{
+    display:flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
 }
 
-.routeInfo .routeList *{
-    width: 100%;
+.main .routeList *{
+    text-align: center;
+    width: 80%;
     height: 50px;
 }
-.routeInfo{
+.main{
     display: flex;
     flex-direction: row;
+    width: 100%;
+}
+
+.routeInfo{
+    width: 100%;
 }

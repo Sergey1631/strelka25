@@ -166,7 +166,18 @@ def saveRoute():
         connection.commit()
         connection.close()
         return 'ok'
-    
+
+@app.route('/getPublicRoutes/', methods=['GET'])
+def getPublicRoutes():
+    connection = sqlite3.connect('database.db')
+
+    cursor = connection.cursor()
+
+    cursor.execute('SELECT * FROM routes WHERE public=1')
+    routes = cursor.fetchall()
+    print(routes)
+    return routes
+
 @app.route('/getRoute/', methods=['GET', 'POST'])
 def getRoute():
     if request.method == 'POST':

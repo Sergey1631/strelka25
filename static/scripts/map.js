@@ -22,7 +22,16 @@ async function init(){
     });
     var result = await response.text();
     const parsedResult = JSON.parse(result)
-    console.log(parsedResult)
+    //console.log(parsedResult)
+
+
+    var publicRoutes = await getPublicRoutes();
+
+    publicRoutes.forEach(element => {
+        let btn = document.createElement('button');
+        btn.innerText = 'sex'
+        document.getElementsByClassName('routeList')[0].appendChild(btn)
+    });
 
     var multiRoute = new ymaps.multiRouter.MultiRoute({   
         referencePoints: parsedResult
@@ -41,10 +50,18 @@ async function init(){
     //saveRoute()
 }
 
-async function getRoute(id){
-    
+async function getPublicRoutes(){
+    var url = '/getPublicRoutes'
+    let response = await fetch(url, {
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+        },
+        method: 'GET',
+    });
+    var result = await response.text();
+    const parsedResult = JSON.parse(result)
+    return parsedResult
 }
-
 
 async function saveRoute(route){
     let data = JSON.stringify({ 
