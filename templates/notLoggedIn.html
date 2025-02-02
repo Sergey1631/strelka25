@@ -8,22 +8,16 @@
     <title>test</title>
 </head>
 
-<body onload="init();">
-    <!-- <h1>Регистрация</h1> -->
+<body>
     <script src="/static/scripts/profile/profile.js"></script>
     <script src="/static/scripts/PageHelper.js"></script>
    
-    <div class="profileInfo">
-        <div class="name">
-            <p id="username"></p>
-            
-        </div>
-        <img id="profilePic" class="profilePic">
-        
-        <input type="file" name="photoSelector" id="photoSelector" style="width:0px">
-        <button class="editProfileButton" onclick="editProfile()"> Редактировать профиль </button>
+    <div class="">
+        <p>Вы не вошли в аккаунт</p>
+        <button class="loginButton" onclick="redirectToLogin()"> Войти </button>
 
     </div> 
+    
     <div class="error">
         <p id="errorText"></p>
     </div>

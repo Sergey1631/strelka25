@@ -1,6 +1,11 @@
+var usernameField // Поле для ввода имени пользователя
+var profilePic    // Элемент для отображения фотографии пользователя
+var loadedPhoto   // Переменная для загруженного фото
+
 function init()
 {
-  alert(getCookie(''))
+  
+  //alert(getCookie(''))
   //getUsernameByAccountName(getCookie('accountname')).then(val => document.getElementById('username').innerText = val)
   //document.createElement('input');
 }
@@ -22,56 +27,38 @@ async function getUsernameByAccountName(accountname){
   return name
 }
 
-function getCookie(name) {
-  /*
-  let matches = document.cookie.match(new RegExp(
-    "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-  ));
-  return matches ? decodeURIComponent(matches[1]) : undefined;*/
-  return sessionStorage['accountname']
+async function saveChanges(){
+  const data = new FormData();
+  data.append('username', usernameField.value);
+  
+  if (loadedPhoto)
+  {
+    data.append('photo', loadedPhoto);
+    alert(loadedPhoto)
+  }
+  let response = await fetch('/profile/saveProfileChanges', {
+    method: 'POST',    
+    body: data
+  })
+  filename = await response.text()
 }
 
-
-async function editData()
+async function editPhoto()
 {
-    var accountname = document.getElementById('accountname').value;
-    var password = document.getElementById('password').value; 
-    var url = '/login'
-    
-    let data = JSON.stringify({ 
-      password: password,
-      accountname:accountname })
-    
-    let response = await fetch(url, {
-      headers: {
-          "Content-Type": "application/json; charset=utf-8",
-      },
-      method: 'POST',
-      body: data
-    });
-      
-    var error = ""
-    var result = await response.text();
-    try
-    {
-      const parsedResult = JSON.parse(result)
-      error = parsedResult.error;
-    }
-    catch{
+  var input = document.getElementById('photoSelector');
+  input.type = 'file';
+  
+  input.onchange = async e => { 
 
-    }
+    var file = e.target.files[0]; 
+    loadedPhoto = file;
     
-    console.log(result)
-    
-    if (error!=""){
-        StaticsLib.setErrorText(error)
-    }
-    
-    if(response.redirected){
-        window.location.href = response.url;
-    }
+    profilePic.src = URL.createObjectURL(loadedPhoto)
+  }
+  input.click(); 
 }
 
+/*
 async function editPhoto()
 {
   alert(getCookie(''))
@@ -80,7 +67,6 @@ async function editPhoto()
   input.type = 'file';
   
   input.onchange = async e => { 
-
     var file = e.target.files[0]; 
 
     photo = file;
@@ -101,4 +87,4 @@ async function editPhoto()
 
 function loadAccountPhoto(accountname){
   accountname
-}
+}*/

@@ -6,10 +6,10 @@ from flask import Flask, redirect, render_template, request, session
 from PIL import Image
 #from werkzeusg.utils import secure_filename
 
-UPLOAD_FOLDER = 'static\\images\\profilePics'
+PROFILEPICS_FOLDER = 'static\\images\\profilePics'
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['PROFILEPICS_FOLDER'] = PROFILEPICS_FOLDER
 app.config['account_url'] = 'static\\account\\'
 app.config['profilePicsPath'] = 'static\\images\\profilePics\\'
 
@@ -22,6 +22,13 @@ def makeError(errorString):
         "error" : errorString
     } 
     return data
+
+def getLocalUser():
+    connection = sqlite3.connect('database.db')
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM users WHERE id=?', [session['id']])
+    connection.close()
+    return cursor.fetchone()
 
 #------------------------------
 
@@ -46,8 +53,6 @@ def login():
         
         cursor.execute('SELECT id FROM users WHERE email=? AND password=?', user)
         id = str(cursor.fetchone()[0])
-        print(id)
-        isUserExists = cursor.fetchone() == (1,)
 
         session['user_id'] = id
         resp = redirect("/profile")
@@ -100,10 +105,47 @@ def signUp():
         return resp
     return render_template("/signup.html")
 
+
+#-----Страница профиля-----
+#Проверяется, вошёл ли пользователь в аккаунт. Если не вошёл, то выводится страница с предложением войти в аккаунт
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    return render_template("/profile.html")
+    if 'user_id' in session:
+        return render_template("/profile.html")
+    else:
+        return render_template("/notLoggedIn.html")
 
+@app.route('/editProfile', methods=['GET', 'POST'])
+def editProfile():
+    if 'user_id' in session:
+        return render_template("/editProfile.html")
+    else: 
+        return render_template("/notLoggedIn.html")      
+
+
+@app.route('/profile/saveProfileChanges', methods=['POST'])
+def saveProfileChanges():
+    if request.method == 'POST':        
+        newUsername = request.form['username']  
+        connection = sqlite3.connect('database.db')
+        cursor = connection.cursor()
+        cursor.execute('UPDATE users SET username = ? WHERE id = ?', (newUsername, session['user_id']))
+        
+        if 'photo' in request.files:
+            photo = request.files['photo']
+            filename = id_generator() + '.jpg'
+            photo.save(app.config['profilePicsPath'] + os.path.join(filename))
+
+            img = Image.open(app.config['profilePicsPath'] + filename) 
+            img = img.resize((164, 164))
+            img.save(app.config['profilePicsPath'] + os.path.join(filename), format='JPEG')
+
+            cursor.execute('UPDATE users SET picpath = ? WHERE id = ?', (newUsername, session['user_id']))
+
+        connection.commit()
+        connection.close() 
+        return 'ok'
+    
 @app.route('/account/<operation>', methods=['GET', 'POST'])
 def accountOperation(operation):
     if request.method == 'POST':
