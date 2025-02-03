@@ -15,7 +15,6 @@ app.config['profilePicsPath'] = 'static\\images\\profilePics\\'
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-
 #-------------------------------
 def makeError(errorString):
     data = { 
@@ -29,9 +28,7 @@ def getLocalUser():
     cursor = connection.cursor()
     cursor.execute('SELECT * FROM users WHERE id=?', [session['user_id']])
 
-    
     user = cursor.fetchone()
-
     userDict = {
         'id':user[0],
         'email':user[1],
@@ -39,7 +36,7 @@ def getLocalUser():
         'picname':user[4],
         'admin':user[5]
     }
-    print(json.dumps(userDict))
+    
     connection.close()
     return json.dumps(userDict)
 
@@ -117,7 +114,6 @@ def signUp():
 
         return resp
     return render_template("/signup.html")
-
 
 #-----Страница профиля-----
 #Проверяется, вошёл ли пользователь в аккаунт. Если не вошёл, то выводится страница с предложением войти в аккаунт
