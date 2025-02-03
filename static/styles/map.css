@@ -6,7 +6,16 @@ body {
     flex-direction: column;
     background-color: rgb(45, 45, 45);
 }
+p{
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
+.map{
+    margin-right: 150px;
+    width: 250%; 
+    height: 500px
+}
 .publicRoutes {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 20px;
@@ -22,7 +31,7 @@ body {
 
 .main .routeList *{
     text-align: center;
-    width: 80%;
+    width: 90%;
     height: 50px;
 }
 .main{

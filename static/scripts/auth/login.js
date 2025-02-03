@@ -27,8 +27,6 @@ async function login()
 
     }
     
-    console.log(result)
-    
     if (error!=""){
         PageHelper.setErrorText(error)
     }

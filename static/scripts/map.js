@@ -29,7 +29,7 @@ async function init(){
 
     publicRoutes.forEach(element => {
         let btn = document.createElement('button');
-        btn.innerText = 'sex'
+        btn.innerText = element[2]
         document.getElementsByClassName('routeList')[0].appendChild(btn)
     });
 

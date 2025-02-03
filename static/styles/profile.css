@@ -27,7 +27,12 @@ body h1{
 
 .profileInfo{
     width: 550px;
+    display: flex;
     
+}
+
+.profileInfo *{
+    margin-left: 5px;
 }
 
 input[type=text]{

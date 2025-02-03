@@ -9,19 +9,17 @@
 </head>
 
 <body onload="init();">
-    <!-- <h1>Регистрация</h1> -->
     <script src="/static/scripts/profile/profile.js"></script>
-    <script src="/static/scripts/PageHelper.js"></script>
+    <script src="/static/scripts/pageHelper.js"></script>
    
     <div class="profileInfo">
-        <div class="name">
-            <p id="username"></p>
-            
-        </div>
         <img id="profilePic" class="profilePic">
-        
+        <div class="name">
+            
+            <p id="username">USERNAME</p>
+            <button class="editProfileButton" onclick="editProfile()"> Редактировать профиль </button>
+        </div>
         <input type="file" name="photoSelector" id="photoSelector" style="width:0px">
-        <button class="editProfileButton" onclick="editProfile()"> Редактировать профиль </button>
 
     </div> 
     <div class="error">

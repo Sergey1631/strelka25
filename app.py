@@ -2,7 +2,7 @@ import os
 import random
 import sqlite3
 import string
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, json, redirect, render_template, request, session
 from PIL import Image
 #from werkzeusg.utils import secure_filename
 
@@ -23,12 +23,25 @@ def makeError(errorString):
     } 
     return data
 
+@app.route('/getLocalUser', methods=['GET'])
 def getLocalUser():
     connection = sqlite3.connect('database.db')
     cursor = connection.cursor()
-    cursor.execute('SELECT * FROM users WHERE id=?', [session['id']])
+    cursor.execute('SELECT * FROM users WHERE id=?', [session['user_id']])
+
+    
+    user = cursor.fetchone()
+
+    userDict = {
+        'id':user[0],
+        'email':user[1],
+        'username':user[3],
+        'picname':user[4],
+        'admin':user[5]
+    }
+    print(json.dumps(userDict))
     connection.close()
-    return cursor.fetchone()
+    return json.dumps(userDict)
 
 #------------------------------
 
@@ -146,46 +159,6 @@ def saveProfileChanges():
         connection.close() 
         return 'ok'
     
-@app.route('/account/<operation>', methods=['GET', 'POST'])
-def accountOperation(operation):
-    if request.method == 'POST':
-        if operation == "getUsernameByAccountname":
-            jsonData = request.get_json()
-            accountname = jsonData['accountname']
-            connection = sqlite3.connect('database.db')
-
-            cursor = connection.cursor()
-
-            cursor.execute('SELECT username FROM users WHERE accountname=?', [accountname])
-            name = cursor.fetchone()
-            connection.close()
-            
-            data = { 
-                "name" : name, 
-            } 
-            return data
-        
-        if operation == "editPhoto":
-            if 'file' in request.files:
-                photo = request.files['file']
-                accountname = request.form['accountname']
-                filename = id_generator() + '.jpg'
-                connection = sqlite3.connect('database.db')
-
-                cursor = connection.cursor()
-
-                cursor.execute('UPDATE users SET picName = ? WHERE accountname = ?', (filename, accountname))
-
-                connection.commit()
-                connection.close()
-
-                photo.save(app.config['profilePicsPath'] + os.path.join(filename))
-
-                img = Image.open(app.config['profilePicsPath'] + filename) 
-                img = img.resize((164, 164))
-                img.save(app.config['profilePicsPath'] + os.path.join(filename), format='JPEG')
-
-                return filename
 
 @app.route('/map')
 def showmap():
@@ -230,6 +203,17 @@ def getRoute():
         cursor.execute('SELECT points FROM routes WHERE creator_id=1')
         points = cursor.fetchone()[0]
         return points
+    
+@app.route('/getUserInfoByID', methods=['POST'])
+def getUserInfoByID():
+    
+    user = getLocalUser()
+    
+    data = { 
+        "username" : 'j', 
+        "picpath": user.picpath
+    } 
+    return getLocalUser()
 
 def id_generator(size=32, chars=string.ascii_letters + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))                
