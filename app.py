@@ -6,29 +6,36 @@ from flask import Flask, json, redirect, render_template, request, session
 from PIL import Image
 #from werkzeusg.utils import secure_filename
 
-PROFILEPICS_FOLDER = 'static\\images\\profilePics'
-
 app = Flask(__name__)
-app.config['PROFILEPICS_FOLDER'] = PROFILEPICS_FOLDER
-app.config['account_url'] = 'static\\account\\'
 app.config['profilePicsPath'] = 'static\\images\\profilePics\\'
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 #-------------------------------
+#Функция для возврата ошибки в json формате
 def makeError(errorString):
     data = { 
         "error" : errorString
     } 
     return data
 
+
+# Получаем локального пользователя
+# (так я называю пользователя вошедшего в свой аккаунт)
 @app.route('/getLocalUser', methods=['GET'])
 def getLocalUser():
     connection = sqlite3.connect('database.db')
     cursor = connection.cursor()
+
+    # Запрос для получения пользователя с id, равному user_id из сессии
     cursor.execute('SELECT * FROM users WHERE id=?', [session['user_id']])
 
     user = cursor.fetchone()
+
+    # Формируем словарь и возвращаем его в формате json
+    # Чтобы было удобнее работать с данными в JS
+    # И обращаться непосредственно к аттрибуту, а не по индексу
+    # Например, localUser.username, вместо localUser[3]
     userDict = {
         'id':user[0],
         'email':user[1],
@@ -55,15 +62,19 @@ def login():
         cursor = connection.cursor()
         user = (email, password)
         
+        #Запрос на проверку существования пользователя в БД с указанной почтой и паролем
+        #Если пользователь существует - вернётся 1
         cursor.execute('SELECT EXISTS(SELECT 1 FROM users WHERE email=? AND password=?)', user)
         isUserExists = cursor.fetchone() == (1,)
 
         if not isUserExists:
             return makeError("Неправильные эл.почта или пароль")
         
+        #Получаем id вошедшего пользователя для записи в сессию
         cursor.execute('SELECT id FROM users WHERE email=? AND password=?', user)
+        
+        
         id = str(cursor.fetchone()[0])
-
         session['user_id'] = id
         resp = redirect("/profile")
         resp.set_cookie('user_id', id)
@@ -85,6 +96,8 @@ def signUp():
 
         user = (email, password, username)
         
+        # Проверка на ввод данных. 
+        # Если введены неправильно, вернётся соответсвующая makeError(ошибка)
         if not(email and password and username):
             return makeError("Введены не все данные")
         
@@ -94,6 +107,7 @@ def signUp():
         if len(password) < 8:
             return makeError("Пароль слишком короткий")
 
+
         cursor.execute('SELECT EXISTS(SELECT 1 FROM users WHERE email=?)', [email])
         isExists = cursor.fetchone() == (1,)
 
@@ -101,11 +115,9 @@ def signUp():
             return makeError("Пользователь уже существует")    
     
         cursor.execute('INSERT INTO users (email, password, username) VALUES (?, ?, ?)', user)
-        
         connection.commit()
         
         user_id = str(cursor.lastrowid)
-        print(user_id)
         resp = redirect("/")
         resp.set_cookie('user_id', user_id)
         session['user_id'] = user_id
@@ -130,7 +142,6 @@ def editProfile():
         return render_template("/editProfile.html")
     else: 
         return render_template("/notLoggedIn.html")      
-
 
 @app.route('/profile/saveProfileChanges', methods=['POST'])
 def saveProfileChanges():
