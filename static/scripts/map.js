@@ -15,8 +15,6 @@ async function init(){
     });
     var result = await response.text();
     const parsedResult = JSON.parse(result)
-    //console.log(parsedResult)
-
 
     var publicRoutes = await getPublicRoutes();
 

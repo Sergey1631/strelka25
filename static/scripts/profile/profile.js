@@ -15,5 +15,9 @@ async function init()
 
 async function editProfile()
 {
-    window.location.href = '/editProfile'; 
+  window.location.href = '/editProfile'; 
+}
+
+function redirectToLogin(){
+  window.location.href = '/login';
 }

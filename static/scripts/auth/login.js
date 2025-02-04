@@ -2,12 +2,17 @@ async function login()
 {
     var email = document.getElementById('email').value;
     var password = document.getElementById('password').value; 
-    var url = '/login'
     
+    // route к которому будем отправлять POST-запрос (@app.route('/login') в python)
+    var url = '/login' 
+    
+    // Формируем тело запроса в формате JSON
     let data = JSON.stringify({ 
       password: password,
       email:email })
     
+
+    // Отправляем POST-запрос на указанный выше url
     let response = await fetch(url, {
       headers: {
           "Content-Type": "application/json; charset=utf-8",
@@ -17,16 +22,12 @@ async function login()
     });
       
     var error = ""
-    var result = await response.text();
-    try
-    {
-      const parsedResult = JSON.parse(result)
-      error = parsedResult.error;
-    }
-    catch{
 
-    }
-    
+    // Получаем ответ на запрос
+    var result = await response.text();
+    const parsedResult = JSON.parse(result)
+    error = parsedResult.error;
+
     if (error!=""){
         PageHelper.setErrorText(error)
     }
