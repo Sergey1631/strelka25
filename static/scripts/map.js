@@ -17,11 +17,11 @@ async function init(){
     const parsedResult = JSON.parse(result)
 
     var publicRoutes = await getPublicRoutes();
-
-    publicRoutes.forEach(element => {
+    var routeList = document.getElementsByClassName('routeList')[0]
+    publicRoutes.forEach(route => {
         let btn = document.createElement('button');
-        btn.innerText = element[2]
-        document.getElementsByClassName('routeList')[0].appendChild(btn)
+        btn.innerText = route.name
+        routeList.appendChild(btn)
     });
 
     var multiRoute = new ymaps.multiRouter.MultiRoute({   

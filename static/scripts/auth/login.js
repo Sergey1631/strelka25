@@ -10,7 +10,6 @@ async function login()
     let data = JSON.stringify({ 
       password: password,
       email:email })
-    
 
     // Отправляем POST-запрос на указанный выше url
     let response = await fetch(url, {
@@ -28,14 +27,19 @@ async function login()
     const parsedResult = JSON.parse(result)
     error = parsedResult.error;
 
-    if (error!=""){
-        PageHelper.setErrorText(error)
-    }
-    
+    // Если в ответе есть адрес для переадресации, 
+    // то переадресовываем на адрес из ответа
+    // если же переадресации нет и в ответе поле ошибки не пустое
+    // значит выводим эту ошибку через pageHelper
     if(response.redirected){
-        window.location.href = response.url;
+      window.location.href = response.url;
     }
+    else if (error!=""){
+      pageHelper.setErrorText(error)
+    } 
 }
+
+// Функция для переадресации на страницу регистрации
 function redirectToSignup(){
   signUpPath = "/signup"
   window.location.replace(signUpPath)

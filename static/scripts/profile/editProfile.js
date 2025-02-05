@@ -7,41 +7,59 @@ async function init()
   usernameField = document.getElementById('username')
   profilePic = document.getElementById('profilePic')
 
+  // Получаем данные о локальном пользователе 
+  // (пользователе который сейчас вошёл в свой аккаунт)
   localUser = await pageHelper.getLocalUserInfo()
+
+  // Получаем имя пользователя и записываем его в поле ввода имени
   usernameField.value = localUser.username
 
+  // Получаем имя файла аватарки пользователя и указываем путь к нему
   profilePic.src = "static/images/profilePics/" + localUser.picname
 }
 
-
+// Функция для сохранения изменённых данных о пользователе
 async function saveChanges(){
+  
+  // Обычно при передаче данных из браузера использовался json
+  // Но здесь используется FormData т.к. в json нельзя так легко передавать файлы
+  // (в нашем случае аватарку пользователя)
   const data = new FormData();
   data.append('username', usernameField.value);
   
+  // Если пользователь загрузил новое фото, то записываем в тело запроса ещё и фото
   if (loadedPhoto)
   {
     data.append('photo', loadedPhoto);
-    alert(loadedPhoto)
   }
   let response = await fetch('/profile/saveProfileChanges', {
     method: 'POST',    
     body: data
   })
-  filename = await response.text()
 }
 
+// Функция для загрузки новой фотографии
 async function editPhoto()
 {
+  // Получаем ссылку на элемент загрузки фото (<input type="file">) из html
   var input = document.getElementById('photoSelector');
   input.type = 'file';
   
+  // onchange - event вызываемый, если в input будет загружен какой либо файл
+  // Добавляем в onchange обработку выбранного фото 
   input.onchange = async e => { 
 
     var file = e.target.files[0]; 
     loadedPhoto = file;
     
+    // Показываем выбранное фото в элементе для отображения аватарки
     profilePic.src = URL.createObjectURL(loadedPhoto)
   }
+
+  // Принудительно вызываем процесс выбора фотографии в элементе для выбора файлов
+  // Так как изначально <input type="file"> из html работает самостоятельно, но
+  // выглядит не так как надо, поэтому мы вручную вызываем click() по нему чтобы 
+  // начать процесс выбора файла
   input.click(); 
 }
 

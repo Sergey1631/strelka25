@@ -79,11 +79,12 @@ def login():
         connection.close()
         id = str(cursor.fetchone()[0])
         session['user_id'] = id
-        resp = redirect("/profile")
-        resp.set_cookie('user_id', id)
-        return resp 
+        response = redirect("/profile") # Адрес для переадресации
+        response.set_cookie('user_id', id)
+        return response 
 
     return render_template("login.html")
+
 
 @app.route('/signup',  methods=['GET', 'POST'])
 def signUp():
@@ -97,8 +98,6 @@ def signUp():
         connection = sqlite3.connect('database.db')
         cursor = connection.cursor()
 
-        
-        
         # Проверка на ввод данных. 
         # Если введены неправильно, вернётся соответсвующая makeError(ошибка)
         if not(email and password and username):
@@ -125,7 +124,7 @@ def signUp():
         connection.commit()
         
         user_id = str(cursor.lastrowid)
-        resp = redirect("/")
+        resp = redirect("/profile")
         resp.set_cookie('user_id', user_id)
         session['user_id'] = user_id
 
@@ -217,8 +216,22 @@ def getPublicRoutes():
 
     cursor.execute('SELECT * FROM routes WHERE public=1')
     routes = cursor.fetchall()
-    print(routes)
-    return routes
+    routesArr = []
+    for route in routes:
+        routeDict = {
+            'id': route[0],
+            'creator_id': route[1],
+            'name': route[2],
+            'points': route[3],
+            'public': route[4],
+            'rating': route[5],
+            'comments': route[6],
+            'description': route[7],
+            'photos': route[8]
+        }
+        routesArr.append(routeDict)
+    print(routesArr)
+    return routesArr
 
 @app.route('/getRoute/', methods=['GET', 'POST'])
 def getRoute():
