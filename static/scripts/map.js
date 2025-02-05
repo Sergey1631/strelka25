@@ -20,6 +20,10 @@ async function init(){
     var routeList = document.getElementsByClassName('routeList')[0]
     publicRoutes.forEach(route => {
         let btn = document.createElement('button');
+        btn.routeId = route.id
+        btn.onclick = function(){
+            alert(btn.routeId);
+          };
         btn.innerText = route.name
         routeList.appendChild(btn)
     });
