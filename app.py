@@ -30,25 +30,27 @@ def getLocalUser():
     connection = sqlite3.connect('database.db')
     cursor = connection.cursor()
 
-    # Запрос для получения пользователя с id, равному user_id из сессии
-    cursor.execute('SELECT * FROM users WHERE id=?', [session['user_id']])
+    if 'user_id' in session:
+        # Запрос для получения пользователя с id, равному user_id из сессии
+        cursor.execute('SELECT * FROM users WHERE id=?', [session['user_id']])
 
-    user = cursor.fetchone()
+        user = cursor.fetchone()
 
-    # Формируем словарь и возвращаем его в формате json
-    # Чтобы было удобнее работать с данными в JS
-    # И обращаться непосредственно к аттрибуту, а не по индексу
-    # Например, localUser.username, вместо localUser[3]
-    userDict = {
-        'id':user[0],
-        'email':user[1],
-        'username':user[3],
-        'picname':user[4],
-        'admin':user[5]
-    }
-    
-    connection.close()
-    return json.dumps(userDict)
+        # Формируем словарь и возвращаем его в формате json
+        # Чтобы было удобнее работать с данными в JS
+        # И обращаться непосредственно к аттрибуту, а не по индексу
+        # Например, localUser.username, вместо localUser[3]
+        userDict = {
+            'id':user[0],
+            'email':user[1],
+            'username':user[3],
+            'picname':user[4],
+            'admin':user[5]
+        }
+
+        connection.close()
+        return json.dumps(userDict)
+    else: return makeError('fail')
 
 #------------------------------
 
@@ -76,9 +78,10 @@ def login():
         # Получаем id вошедшего пользователя для записи в сессию
         cursor.execute('SELECT id FROM users WHERE email=? AND password=?', user)
         
-        connection.close()
+        
         id = str(cursor.fetchone()[0])
         session['user_id'] = id
+        connection.close() 
         response = redirect("/profile") # Адрес для переадресации
         response.set_cookie('user_id', id)
         return response 
@@ -132,6 +135,13 @@ def signUp():
 
         return resp
     return render_template("/signup.html")
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logOut():
+    session.pop('user_id', None)
+    response = redirect("/map") # Адрес для переадресации
+    #response.set_cookie('user_id', id)
+    return response 
 
 #-----Страница профиля-----
 #Проверяется, вошёл ли пользователь в аккаунт. Если не вошёл, то выводится страница с предложением войти в аккаунт
@@ -190,7 +200,40 @@ def saveProfileChanges():
 def showmap():
     return render_template("/map.html")
 
+@app.route('/getCommentsForRoute')
+def getCommentsForRoute(id):
+    jsonData = request.get_json()
+    connection = sqlite3.connect('database.db')
 
+    cursor = connection.cursor()
+    
+    routeId = jsonData['route_id']
+    commentText = jsonData['comment']
+
+    query = 'SELECT * FROM comments WHERE id=?'
+    cursor.execute(query, [routeId])
+
+@app.route('/makeComment', methods =['POST'])
+def makeComment():
+    if 'user_id' in session:
+        jsonData = request.get_json()
+        connection = sqlite3.connect('database.db')
+
+        cursor = connection.cursor()
+        
+        routeId = jsonData['route_id']
+        commentText = jsonData['comment']
+
+        comment = (session['user_id'], routeId, commentText, 0)
+
+        query = 'INSERT INTO comments (creator_id, route_id, comment, parent_comment_id) VALUES (?, ?, ?, ?)'
+        cursor.execute(query, comment)
+        connection.commit()
+        connection.close()
+        return 'ok'
+    else:
+        return makeError("Вы не авторизованы")
+    
 #-----Дальше идёт функционал маршрутов, он не доделан-----
 @app.route('/saveRoute/', methods=['GET', 'POST'])
 def saveRoute():
@@ -230,7 +273,7 @@ def getPublicRoutes():
             'photos': route[8]
         }
         routesArr.append(routeDict)
-    print(routesArr)
+    #print(routesArr)
     return routesArr
 
 @app.route('/getRoute/', methods=['GET', 'POST'])
@@ -240,9 +283,22 @@ def getRoute():
 
         cursor = connection.cursor()
 
-        cursor.execute('SELECT points FROM routes WHERE creator_id=1')
-        points = cursor.fetchone()[0]
-        return points
-
-                    
+        jsonData = request.get_json()
+        cursor.execute('SELECT * FROM routes WHERE id=?', [jsonData['route_id']])
+        route = cursor.fetchone()
+        print(route)
+        routeDict = {
+            'id': route[0],
+            'creator_id': route[1],
+            'name': route[2],
+            'points': route[3],
+            'public': route[4],
+            'rating': route[5],
+            'comments': route[6],
+            'description': route[7],
+            'photos': route[8]
+        }
+        connection.close()
+        return routeDict
+                
 app.run("0.0.0.0", debug=True)

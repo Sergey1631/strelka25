@@ -20,13 +20,6 @@ async function login()
       body: data
     });
       
-    var error = ""
-
-    // Получаем ответ на запрос
-    var result = await response.text();
-    const parsedResult = JSON.parse(result)
-    error = parsedResult.error;
-
     // Если в ответе есть адрес для переадресации, 
     // то переадресовываем на адрес из ответа
     // если же переадресации нет и в ответе поле ошибки не пустое
@@ -34,7 +27,16 @@ async function login()
     if(response.redirected){
       window.location.href = response.url;
     }
-    else if (error!=""){
+    else
+    {
+      var error = ""
+
+      // Получаем ответ на запрос
+      var result = await response.text();
+      const parsedResult = JSON.parse(result)
+      error = parsedResult.error;
+
+      
       pageHelper.setErrorText(error)
     } 
 }

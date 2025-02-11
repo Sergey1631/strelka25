@@ -7,18 +7,42 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/map.css') }}" /> 
     <script src="https://api-maps.yandex.ru/2.1/?apikey=d837f1b4-7457-46b1-84b4-9f1b26718d5b&lang=ru_RU" type="text/javascript"></script>
     <script src="/static/scripts/map.js"></script>
+    <script src="/static/scripts/pageHelper.js"></script>
 
 </head>
 
 <body>
+    <div class="profile">
+        <p id="profileName" class="profileName" onclick="onProfileNameClick()">profile_name</p>
+    </div>
     <p class="publicRoutes">Публичные маршруты</p>
+    
+
     <div class="main">
         <div class="routeList" >
 
         </div>
         <div class="map" id="map"></div>
-        <div class="routeInfo">
-            <p>Информация о маршруте</p>
+        <div id= "routeInfo" class="routeInfo">
+            <!-- Tab links -->
+            <div class="tab">
+                <button class="tablinks" onclick="showTabContent(event, 'info')">Основное</button>
+                <button class="tablinks" onclick="showTabContent(event, 'comments')">Комментарии</button>
+                <button class="tablinks" onclick="">Фотографии</button>
+            </div>
+            
+            <div id="info" class="tabcontent">
+                <p id="routeName">ROUTE_NAME</p>
+                <p id="routeDescription">ROUTE_DESCRIPTION</p>
+                <p id="routeRating">ROUTE_RATING</p>
+                <p id="routeComments">ROUTE_COMMENTS</p>
+            </div>
+            <div id="comments" class="tabcontent">
+                <input type="text" id="commentField"/>
+                <button onclick="makeComment()">Оставить комментарий</button>
+            </div>
+            
+            
         </div>  
     </div>
 
