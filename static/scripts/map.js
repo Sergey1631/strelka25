@@ -6,6 +6,9 @@ var routeDescriptionText; //... описания маршрута
 var routeRatingText; //... рейтинга маршрута
 var profileNameText; // элемент текста имени пользователя
 var commentField; // элемент поля ввода комментария
+var routeList;
+var commentsList;
+
 
 var publicRoutes; // переменная для хранения всех публичных маршрутов
 
@@ -21,7 +24,10 @@ async function init(){
     routeRatingText = document.getElementById("routeRating");
     profileNameText = document.getElementById('profileName');
     commentField = document.getElementById('commentField');
-    
+    routeList = document.getElementsByClassName('routeList')[0];
+    commentsList = document.getElementsByClassName('commentsList')[0];
+
+
     user = await pageHelper.getLocalUserInfo();
     if (user.error=='fail') {
         profileNameText.innerText = 'Войти'
@@ -38,7 +44,6 @@ async function init(){
     });
 
     var publicRoutes = await getPublicRoutes();
-    var routeList = document.getElementsByClassName('routeList')[0]
     publicRoutes.forEach(route => {
         let btn = document.createElement('button');
         btn.routeId = route.id
@@ -83,7 +88,7 @@ async function makeComment(){
     }
 }
 
-// Получить информацию о маршруте по его id через GetRoute
+// Получить информацию о маршруте по его id через getRoute
 // и вывод полученных данных пользователю
 async function showRouteInfo(id){
     if(id != currentRouteId){
@@ -101,7 +106,16 @@ async function showRouteInfo(id){
         routeRatingText.innerText = "Рейтинг: " + route.rating
         myMap.geoObjects.add(multiRoute);
 
+        route.comments.forEach(comment => {
+            let commentElem = document.createElement('p');
+            //commentElem.routeId = route.id
+            //commentElem.addEventListener('click', onRouteButtonClick)
+            commentElem.innerText = comment.comment;
+            commentsList.appendChild(commentElem);
+        })
         
+        
+        console.log(route.comments);
     }
 }
 

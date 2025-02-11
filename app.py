@@ -4,55 +4,11 @@ import sqlite3
 import string
 from flask import Flask, json, redirect, render_template, request, session
 from PIL import Image
-#from werkzeusg.utils import secure_filename
 
 app = Flask(__name__)
 app.config['profilePicsPath'] = 'static\\images\\profilePics\\'
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-
-#----Вспомогательные функции----
-# Функция для возврата ошибки в json формате
-def makeError(errorString):
-    data = { 
-        "error" : errorString
-    } 
-    return data
-
-# Функция для генерации рандомной строки (используется для генерации имени загруженной фотографии)
-def id_generator(size=32, chars=string.ascii_letters + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))      
-
-# Получаем локального пользователя
-# (так я называю пользователя вошедшего в свой аккаунт)
-@app.route('/getLocalUser', methods=['GET'])
-def getLocalUser():
-    connection = sqlite3.connect('database.db')
-    cursor = connection.cursor()
-
-    if 'user_id' in session:
-        # Запрос для получения пользователя с id, равному user_id из сессии
-        cursor.execute('SELECT * FROM users WHERE id=?', [session['user_id']])
-
-        user = cursor.fetchone()
-
-        # Формируем словарь и возвращаем его в формате json
-        # Чтобы было удобнее работать с данными в JS
-        # И обращаться непосредственно к аттрибуту, а не по индексу
-        # Например, localUser.username, вместо localUser[3]
-        userDict = {
-            'id':user[0],
-            'email':user[1],
-            'username':user[3],
-            'picname':user[4],
-            'admin':user[5]
-        }
-
-        connection.close()
-        return json.dumps(userDict)
-    else: return makeError('fail')
-
-#------------------------------
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -200,18 +156,26 @@ def saveProfileChanges():
 def showmap():
     return render_template("/map.html")
 
-@app.route('/getCommentsForRoute')
+# Получаем комментарии к маршруту по его id и возвращаем массив словарей
 def getCommentsForRoute(id):
-    jsonData = request.get_json()
     connection = sqlite3.connect('database.db')
 
     cursor = connection.cursor()
-    
-    routeId = jsonData['route_id']
-    commentText = jsonData['comment']
+    cursor.execute('SELECT * FROM comments WHERE route_id=?', [id])
+    comments = cursor.fetchall()
 
-    query = 'SELECT * FROM comments WHERE id=?'
-    cursor.execute(query, [routeId])
+    commentsArr = []
+
+    for com in comments:
+        commentDict = {
+            'id': com[0],
+            'creator_id': com[1],
+            'route_id': com[2],
+            'comment': com[3],
+            'parent_comment_id': com[4]
+        }
+        commentsArr.append(commentDict)
+    return commentsArr
 
 @app.route('/makeComment', methods =['POST'])
 def makeComment():
@@ -251,6 +215,7 @@ def saveRoute():
         connection.close()
         return 'ok'
 
+# Получаем все публичные маршруты
 @app.route('/getPublicRoutes/', methods=['GET'])
 def getPublicRoutes():
     connection = sqlite3.connect('database.db')
@@ -261,21 +226,23 @@ def getPublicRoutes():
     routes = cursor.fetchall()
     routesArr = []
     for route in routes:
+        id = route[0]
+        comments = getCommentsForRoute(id)
         routeDict = {
-            'id': route[0],
+            'id': id,
             'creator_id': route[1],
             'name': route[2],
             'points': route[3],
             'public': route[4],
             'rating': route[5],
-            'comments': route[6],
+            'comments': comments,
             'description': route[7],
             'photos': route[8]
         }
         routesArr.append(routeDict)
-    #print(routesArr)
     return routesArr
 
+# Получаем маршрут и информацию о нём из БД по его id
 @app.route('/getRoute/', methods=['GET', 'POST'])
 def getRoute():
     if request.method == 'POST':
@@ -284,9 +251,12 @@ def getRoute():
         cursor = connection.cursor()
 
         jsonData = request.get_json()
+
         cursor.execute('SELECT * FROM routes WHERE id=?', [jsonData['route_id']])
         route = cursor.fetchone()
-        print(route)
+
+        comments = getCommentsForRoute(jsonData['route_id'])
+        
         routeDict = {
             'id': route[0],
             'creator_id': route[1],
@@ -294,11 +264,54 @@ def getRoute():
             'points': route[3],
             'public': route[4],
             'rating': route[5],
-            'comments': route[6],
+            'comments': comments,
             'description': route[7],
             'photos': route[8]
         }
         connection.close()
         return routeDict
+    
+#----Вспомогательные функции----
+# Функция для возврата ошибки в json формате
+def makeError(errorString):
+    data = { 
+        "error" : errorString
+    } 
+    return data
+
+# Функция для генерации рандомной строки (используется для генерации имени загруженной фотографии)
+def id_generator(size=32, chars=string.ascii_letters + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))      
+
+# Получаем локального пользователя
+# (так я называю пользователя вошедшего в свой аккаунт)
+@app.route('/getLocalUser', methods=['GET'])
+def getLocalUser():
+    connection = sqlite3.connect('database.db')
+    cursor = connection.cursor()
+
+    if 'user_id' in session:
+        # Запрос для получения пользователя с id, равному user_id из сессии
+        cursor.execute('SELECT * FROM users WHERE id=?', [session['user_id']])
+
+        user = cursor.fetchone()
+
+        # Формируем словарь и возвращаем его в формате json
+        # Чтобы было удобнее работать с данными в JS
+        # И обращаться непосредственно к аттрибуту, а не по индексу
+        # Например, localUser.username, вместо localUser[3]
+        userDict = {
+            'id':user[0],
+            'email':user[1],
+            'username':user[3],
+            'picname':user[4],
+            'admin':user[5]
+        }
+
+        connection.close()
+        return json.dumps(userDict)
+    else: return makeError('fail')
+
+#------------------------------
                 
 app.run("0.0.0.0", debug=True)
