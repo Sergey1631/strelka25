@@ -2,11 +2,13 @@ import os
 import random
 import sqlite3
 import string
+import exportRoutes
 from flask import Flask, json, redirect, render_template, request, session
 from PIL import Image
 
 app = Flask(__name__)
 app.config['profilePicsPath'] = 'static\\images\\profilePics\\'
+app.config['routePhotosPath'] = 'static\\images\\routes\\'
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
@@ -34,7 +36,6 @@ def login():
         # Получаем id вошедшего пользователя для записи в сессию
         cursor.execute('SELECT id FROM users WHERE email=? AND password=?', user)
         
-        
         id = str(cursor.fetchone()[0])
         session['user_id'] = id
         connection.close() 
@@ -44,6 +45,22 @@ def login():
 
     return render_template("login.html")
 
+@app.route('/export', methods=['POST'])
+def export():
+    if request.method == 'POST':
+        jsonData = request.get_json()
+        
+        route_id = jsonData['id']
+        export_type = jsonData['export_type']
+        points = jsonData['points']
+
+        #print(points)
+        if export_type == 'gpx':
+            return exportRoutes.export_gpx(points, route_id)
+        if export_type == 'kmz':
+            return exportRoutes.export_kmz(points, route_id)
+        if export_type == 'kml':
+            return exportRoutes.export_kml(points, route_id)
 
 @app.route('/signup',  methods=['GET', 'POST'])
 def signUp():
@@ -137,7 +154,7 @@ def saveProfileChanges():
             # Генерируем имя для фотографии
             filename = id_generator() + '.jpg' 
 
-            # Сохраняем фото в пути app.config['profilePicsPath']
+            # Сохраняем фото по пути app.config['profilePicsPath']
             photo.save(app.config['profilePicsPath'] + os.path.join(filename))  
 
             # Открываем изображение и изменяем его размер на 164x164
@@ -156,6 +173,14 @@ def saveProfileChanges():
 def showmap():
     return render_template("/map.html")
 
+def getPhotosForRoute(id):
+    connection = sqlite3.connect('database.db')
+
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM comments WHERE route_id=?', [id])
+    comments = cursor.fetchall()
+    connection.close()
+    return comments
 # Получаем комментарии к маршруту по его id и возвращаем массив словарей
 def getCommentsForRoute(id):
     connection = sqlite3.connect('database.db')
@@ -165,7 +190,7 @@ def getCommentsForRoute(id):
     comments = cursor.fetchall()
 
     commentsArr = []
-
+    connection.close()
     for com in comments:
         commentDict = {
             'id': com[0],
@@ -177,6 +202,7 @@ def getCommentsForRoute(id):
         commentsArr.append(commentDict)
     return commentsArr
 
+# route для оставления комментария к маршруту
 @app.route('/makeComment', methods =['POST'])
 def makeComment():
     if 'user_id' in session:
@@ -186,12 +212,12 @@ def makeComment():
         cursor = connection.cursor()
         
         routeId = jsonData['route_id']
-        commentText = jsonData['comment']
+        comment = jsonData['comment']
 
-        comment = (session['user_id'], routeId, commentText, 0)
+        commentTuple = (session['user_id'], routeId, comment, 0)
 
         query = 'INSERT INTO comments (creator_id, route_id, comment, parent_comment_id) VALUES (?, ?, ?, ?)'
-        cursor.execute(query, comment)
+        cursor.execute(query, commentTuple)
         connection.commit()
         connection.close()
         return 'ok'
@@ -226,20 +252,7 @@ def getPublicRoutes():
     routes = cursor.fetchall()
     routesArr = []
     for route in routes:
-        id = route[0]
-        comments = getCommentsForRoute(id)
-        routeDict = {
-            'id': id,
-            'creator_id': route[1],
-            'name': route[2],
-            'points': route[3],
-            'public': route[4],
-            'rating': route[5],
-            'comments': comments,
-            'description': route[7],
-            'photos': route[8]
-        }
-        routesArr.append(routeDict)
+        routesArr.append(makeRouteDict(route))
     return routesArr
 
 # Получаем маршрут и информацию о нём из БД по его id
@@ -255,22 +268,16 @@ def getRoute():
         cursor.execute('SELECT * FROM routes WHERE id=?', [jsonData['route_id']])
         route = cursor.fetchone()
 
-        comments = getCommentsForRoute(jsonData['route_id'])
-        
-        routeDict = {
-            'id': route[0],
-            'creator_id': route[1],
-            'name': route[2],
-            'points': route[3],
-            'public': route[4],
-            'rating': route[5],
-            'comments': comments,
-            'description': route[7],
-            'photos': route[8]
-        }
         connection.close()
-        return routeDict
+        return makeRouteDict(route)
     
+
+
+
+
+
+
+
 #----Вспомогательные функции----
 # Функция для возврата ошибки в json формате
 def makeError(errorString):
@@ -296,10 +303,6 @@ def getLocalUser():
 
         user = cursor.fetchone()
 
-        # Формируем словарь и возвращаем его в формате json
-        # Чтобы было удобнее работать с данными в JS
-        # И обращаться непосредственно к аттрибуту, а не по индексу
-        # Например, localUser.username, вместо localUser[3]
         userDict = {
             'id':user[0],
             'email':user[1],
@@ -311,6 +314,28 @@ def getLocalUser():
         connection.close()
         return json.dumps(userDict)
     else: return makeError('fail')
+
+
+# Формируем словарь и возвращаем его в формате json
+# Чтобы было удобнее работать с данными в JS
+# И обращаться непосредственно к аттрибуту, а не по индексу
+# Например, route.description, вместо route[7]
+
+# Создание словаря по переданному route из БД 
+def makeRouteDict(route):
+    comments = getCommentsForRoute(route[0])
+    routeDict = {
+        'id': route[0],
+        'creator_id': route[1],
+        'name': route[2],
+        'points': route[3],
+        'public': route[4],
+        'rating': route[5],
+        'comments': comments,
+        'description': route[7],
+        'photos': route[8]
+    }
+    return routeDict
 
 #------------------------------
                 

@@ -18,9 +18,10 @@
     <p class="publicRoutes">Публичные маршруты</p>
     
 
-    <div class="main">
-        <div class="routeList" >
 
+    <div class="main">
+
+        <div class="routeList" >
         </div>
         <div class="map" id="map"></div>
         <div id= "routeInfo" class="routeInfo">
@@ -28,7 +29,7 @@
             <div class="tab">
                 <button class="tablinks" onclick="showTabContent(event, 'info')">Основное</button>
                 <button class="tablinks" onclick="showTabContent(event, 'comments')">Комментарии</button>
-                <button class="tablinks" onclick="">Фотографии</button>
+                <button class="tablinks" onclick="showTabContent(event, 'photos')">Фотографии</button>
             </div>
             
             <div id="info" class="tabcontent">
@@ -45,8 +46,14 @@
                 
                 <button onclick="makeComment()">Оставить комментарий</button>
             </div>
+            <div id="photos" class="tabcontent">
+                <div class="photosList">
+                </div>                
+            </div>
             
-            
+            <p class='exportLabel' onclick="exportRoute('gpx')">Экспорт маршрута в gpx</p>
+            <p class='exportLabel' onclick="exportRoute('kml')">Экспорт маршрута в kml</p>
+            <p class='exportLabel' onclick="exportRoute('kmz')">Экспорт маршрута в kmz</p>
         </div>  
     </div>
 

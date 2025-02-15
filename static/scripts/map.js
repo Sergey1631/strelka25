@@ -9,13 +9,14 @@ var commentField; // элемент поля ввода комментария
 var routeList;
 var commentsList;
 
+var pathCoords;
 
 var publicRoutes; // переменная для хранения всех публичных маршрутов
 
 var localUser; // переменная для хранения вошедшего пользователя
 
-var currentRouteId = 0; // id выбранного маршрута
-
+var currentRoute;
+var currentRouteId = -1;
 ymaps.ready(init);
 
 async function init(){
@@ -26,9 +27,10 @@ async function init(){
     commentField = document.getElementById('commentField');
     routeList = document.getElementsByClassName('routeList')[0];
     commentsList = document.getElementsByClassName('commentsList')[0];
-
-
+    photosList = document.getElementsByClassName('photosList')[0];
+    
     user = await pageHelper.getLocalUserInfo();
+
     if (user.error=='fail') {
         profileNameText.innerText = 'Войти'
     }
@@ -43,6 +45,8 @@ async function init(){
         zoom: 7
     });
 
+    
+
     var publicRoutes = await getPublicRoutes();
     publicRoutes.forEach(route => {
         let btn = document.createElement('button');
@@ -53,12 +57,11 @@ async function init(){
     });
     showRouteInfo(publicRoutes[0].id)
 
+    /*
     var referencePoints;
-    referencePoints = [
-        [55.76, 37.64],
-        [55.73, 37.6]
-    ]
-    //console.log(JSON.stringify(referencePoints))
+    referencePoints = ['kolosunin.jpg', 'test.jpg']
+    
+    console.log(JSON.stringify(referencePoints))*/
     //saveRoute()
 }
 
@@ -67,7 +70,7 @@ async function makeComment(){
     var url = '/makeComment'
 
     let data = JSON.stringify({ 
-        route_id: currentRouteId, 
+        route_id: currentRoute.id, 
         comment: commentField.value
     })
 
@@ -94,18 +97,37 @@ async function showRouteInfo(id){
     if(id != currentRouteId){
         route = await getRoute(id);
         var points = JSON.parse(route.points);
-        currentRouteId = route.id
-        
+        var photos = JSON.parse(route.photos);
+        currentRoute = route;
         var multiRoute = new ymaps.multiRouter.MultiRoute({   
             referencePoints: points
         }, {
+            wayPointVisible: false,
             boundsAutoApply: true
         });
         routeNameText.innerText = "Название маршрута: " + route.name
         routeDescriptionText.innerText = "Описание: " + route.description
         routeRatingText.innerText = "Рейтинг: " + route.rating
         myMap.geoObjects.add(multiRoute);
-
+        multiRoute.model.events.add('requestsuccess', function() {
+            // Получение информации об активном маршруте.
+            var activeRoute = multiRoute.getActiveRoute();
+            // Получение коллекции путей маршрута.
+            var activeRoutePaths = activeRoute.getPaths(); 
+            // Проход по коллекции путей
+            // активного маршрута.
+            activeRoutePaths.each(function(path) {
+                // Путь автомобильного маршрута - это
+                // объект <u />.
+                // Получение коллекции сегментов в пути.
+                var segments = path.getSegments(); 
+                // Проход по коллекции сегментов и вывод
+                // информации о каждом сегменте.
+                pathCoords = path.properties.get('coordinates');
+                
+            });
+        }); 
+        commentsList.innerText = ''
         route.comments.forEach(comment => {
             let commentElem = document.createElement('p');
             //commentElem.routeId = route.id
@@ -113,9 +135,27 @@ async function showRouteInfo(id){
             commentElem.innerText = comment.comment;
             commentsList.appendChild(commentElem);
         })
+        //console.log(photos)
+        photosList.innerText = ''
+
+        photos.forEach(photo => {
+            let photoElem = document.createElement('img');
+            photoElem.src = "static/images/routes/" + photo;
+            photoElem.style.height = '100px';
+            photoElem.style.weight = '100px';
+
+            photosList.appendChild(photoElem);
+
+            let photoElem2 = document.createElement('img');
+            photoElem2.src = "static/images/routes/" + photo;
+            photoElem2.style.height = '100px';
+            photoElem2.style.weight = '100px';
+
+            photosList.appendChild(photoElem2);
+        })
         
         
-        console.log(route.comments);
+        //console.log(route.comments);
     }
 }
 
@@ -134,6 +174,32 @@ function onProfileNameClick(){
     else{
         toAuth();
     }
+}
+
+async function exportRoute(type){
+    var url = '/export'
+
+    let data = JSON.stringify({ 
+        id: currentRoute.id,
+        points: pathCoords, 
+        export_type: type
+    })
+    //console.log(data)
+
+    let response = await fetch(url, {
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+        },
+        method: 'POST',
+        body: data
+    });
+    var result = await response.text();
+
+    exporturi = '/static/exports/' + type + "/" + result;
+    pageHelper.downloadURI(exporturi, type + '_export')
+    
+    /*console.log()
+    const parsedResult = JSON.parse(result);*/
 }
 
 function toProfile(){
