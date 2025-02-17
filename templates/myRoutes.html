@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/myRoutes.css') }}" /> 
     <script src="https://api-maps.yandex.ru/2.1/?apikey=d837f1b4-7457-46b1-84b4-9f1b26718d5b&lang=ru_RU" type="text/javascript"></script>
-    <script src="/static/scripts/map.js"></script>
+    <script src="/static/scripts/myRoutes.js"></script>
     <script src="/static/scripts/pageHelper.js"></script>
 </head>
 
@@ -20,7 +20,9 @@
         <div class="routeList" >
         </div>
         <div class="map" id="map"></div>
+        
         <div id= "routeInfo" class="routeInfo">
+            <p onclick="editRoute()">Редактировать маршрут</p>
             <div class="tab">
                 <button class="tablinks" onclick="showTabContent(event, 'info')">Основное</button>
                 <button class="tablinks" onclick="showTabContent(event, 'photos')">Фото</button>

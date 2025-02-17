@@ -262,14 +262,14 @@ def getPublicRoutes():
     return routesArr
 
 # Получаем все свои маршруты
-@app.route('/getMyRoutes/', methods=['GET'])
+@app.route('/getMyRoutes/', methods=['POST'])
 def getMyRoutes():
     connection = sqlite3.connect('database.db')
 
     cursor = connection.cursor()
 
     jsonData = request.get_json()
-    cursor.execute('SELECT * FROM routes WHERE creator_id=?', jsonData['creator_id'])
+    cursor.execute('SELECT * FROM routes WHERE creator_id=?', [jsonData['creator_id']])
     routes = cursor.fetchall()
     routesArr = []
     for route in routes:
@@ -299,9 +299,7 @@ def getRouteChanges(id):
         connection.row_factory = sqlite3.Row
         cursor = connection.cursor()
 
-        jsonData = request.get_json()
-
-        cursor.execute('SELECT * FROM changes WHERE route_id=?', [jsonData['route_id']])
+        cursor.execute('SELECT * FROM changes WHERE route_id=?', [id])
         changes = cursor.fetchall()
 
         
