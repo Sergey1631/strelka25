@@ -45,23 +45,6 @@ def login():
 
     return render_template("login.html")
 
-@app.route('/export', methods=['POST'])
-def export():
-    if request.method == 'POST':
-        jsonData = request.get_json()
-        
-        route_id = jsonData['id']
-        export_type = jsonData['export_type']
-        points = jsonData['points']
-
-        #print(points)
-        if export_type == 'gpx':
-            return exportRoutes.export_gpx(points, route_id)
-        if export_type == 'kmz':
-            return exportRoutes.export_kmz(points, route_id)
-        if export_type == 'kml':
-            return exportRoutes.export_kml(points, route_id)
-
 @app.route('/signup',  methods=['GET', 'POST'])
 def signUp():
     if request.method == 'POST':
@@ -134,7 +117,6 @@ def editProfile():
     else: 
         return render_template("/notLoggedIn.html")      
 
-
 # route для сохранения изменённых данных о пользователя
 # Обычно при передаче данных из браузера использовался json
 # Но здесь используется form т.к. в json нельзя передавать файлы(в нашем случае аватарку пользователя) 
@@ -172,6 +154,30 @@ def saveProfileChanges():
 @app.route('/map')
 def showmap():
     return render_template("/map.html")
+
+@app.route('/myRoutes')
+def myRoutes():
+    if 'user_id' in session:
+        return render_template("/myRoutes.html")
+    else:
+        return render_template("/notLoggedIn.html")
+
+@app.route('/export', methods=['POST'])
+def export():
+    if request.method == 'POST':
+        jsonData = request.get_json()
+        
+        route_id = jsonData['id']
+        export_type = jsonData['export_type']
+        points = jsonData['points']
+
+        #print(points)
+        if export_type == 'gpx':
+            return exportRoutes.export_gpx(points, route_id)
+        if export_type == 'kmz':
+            return exportRoutes.export_kmz(points, route_id)
+        if export_type == 'kml':
+            return exportRoutes.export_kml(points, route_id)
 
 def getPhotosForRoute(id):
     connection = sqlite3.connect('database.db')
@@ -255,6 +261,21 @@ def getPublicRoutes():
         routesArr.append(makeRouteDict(route))
     return routesArr
 
+# Получаем все свои маршруты
+@app.route('/getMyRoutes/', methods=['GET'])
+def getMyRoutes():
+    connection = sqlite3.connect('database.db')
+
+    cursor = connection.cursor()
+
+    jsonData = request.get_json()
+    cursor.execute('SELECT * FROM routes WHERE creator_id=?', jsonData['creator_id'])
+    routes = cursor.fetchall()
+    routesArr = []
+    for route in routes:
+        routesArr.append(makeRouteDict(route))
+    return routesArr
+
 # Получаем маршрут и информацию о нём из БД по его id
 @app.route('/getRoute/', methods=['GET', 'POST'])
 def getRoute():
@@ -272,10 +293,20 @@ def getRoute():
         return makeRouteDict(route)
     
 
+def getRouteChanges(id):
+    if request.method == 'POST':
+        connection = sqlite3.connect('database.db')
+        connection.row_factory = sqlite3.Row
+        cursor = connection.cursor()
 
+        jsonData = request.get_json()
 
+        cursor.execute('SELECT * FROM changes WHERE route_id=?', [jsonData['route_id']])
+        changes = cursor.fetchall()
 
-
+        
+        connection.close()
+        return json.dumps([dict(c) for c in changes])
 
 
 #----Вспомогательные функции----
@@ -324,6 +355,7 @@ def getLocalUser():
 # Создание словаря по переданному route из БД 
 def makeRouteDict(route):
     comments = getCommentsForRoute(route[0])
+    changes = getRouteChanges(route[0])
     routeDict = {
         'id': route[0],
         'creator_id': route[1],
@@ -332,6 +364,7 @@ def makeRouteDict(route):
         'public': route[4],
         'rating': route[5],
         'comments': comments,
+        'changes': changes,
         'description': route[7],
         'photos': route[8]
     }

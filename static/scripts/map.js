@@ -8,7 +8,8 @@ var profileNameText; // элемент текста имени пользова�
 var commentField; // элемент поля ввода комментария
 var routeList;
 var commentsList;
-
+var changesList;
+var changesMode;
 var pathCoords;
 
 var publicRoutes; // переменная для хранения всех публичных маршрутов
@@ -17,6 +18,7 @@ var localUser; // переменная для хранения вошедшег�
 
 var currentRoute;
 var currentRouteId = -1;
+var mapRoute;
 ymaps.ready(init);
 
 async function init(){
@@ -28,7 +30,7 @@ async function init(){
     routeList = document.getElementsByClassName('routeList')[0];
     commentsList = document.getElementsByClassName('commentsList')[0];
     photosList = document.getElementsByClassName('photosList')[0];
-    
+    changesList = document.getElementsByClassName('changesList')[0];
     user = await pageHelper.getLocalUserInfo();
 
     if (user.error=='fail') {
@@ -46,7 +48,6 @@ async function init(){
     });
 
     
-
     var publicRoutes = await getPublicRoutes();
     publicRoutes.forEach(route => {
         let btn = document.createElement('button');
@@ -91,6 +92,26 @@ async function makeComment(){
     }
 }
 
+function buildRouteOnMap(points){
+    myMap.geoObjects.remove(mapRoute);
+    console.log(points)
+    var multiRoute = new ymaps.multiRouter.MultiRoute({   
+        referencePoints: points
+    }, {
+        wayPointVisible: false,
+        boundsAutoApply: true
+    });
+    myMap.geoObjects.add(multiRoute);
+    mapRoute = multiRoute;
+    multiRoute.model.events.add('requestsuccess', function() {
+        var activeRoute = multiRoute.getActiveRoute();
+        var activeRoutePaths = activeRoute.getPaths(); 
+        activeRoutePaths.each(function(path) {
+            pathCoords = path.properties.get('coordinates');
+        });
+    }); 
+}
+
 // Получить информацию о маршруте по его id через getRoute
 // и вывод полученных данных пользователю
 async function showRouteInfo(id){
@@ -98,46 +119,21 @@ async function showRouteInfo(id){
         route = await getRoute(id);
         var points = JSON.parse(route.points);
         var photos = JSON.parse(route.photos);
+        var changes = JSON.parse(route.changes);
         currentRoute = route;
-        var multiRoute = new ymaps.multiRouter.MultiRoute({   
-            referencePoints: points
-        }, {
-            wayPointVisible: false,
-            boundsAutoApply: true
-        });
+        buildRouteOnMap(points);
         routeNameText.innerText = "Название маршрута: " + route.name
         routeDescriptionText.innerText = "Описание: " + route.description
         routeRatingText.innerText = "Рейтинг: " + route.rating
-        myMap.geoObjects.add(multiRoute);
-        multiRoute.model.events.add('requestsuccess', function() {
-            // Получение информации об активном маршруте.
-            var activeRoute = multiRoute.getActiveRoute();
-            // Получение коллекции путей маршрута.
-            var activeRoutePaths = activeRoute.getPaths(); 
-            // Проход по коллекции путей
-            // активного маршрута.
-            activeRoutePaths.each(function(path) {
-                // Путь автомобильного маршрута - это
-                // объект <u />.
-                // Получение коллекции сегментов в пути.
-                var segments = path.getSegments(); 
-                // Проход по коллекции сегментов и вывод
-                // информации о каждом сегменте.
-                pathCoords = path.properties.get('coordinates');
-                
-            });
-        }); 
+        
         commentsList.innerText = ''
         route.comments.forEach(comment => {
             let commentElem = document.createElement('p');
-            //commentElem.routeId = route.id
-            //commentElem.addEventListener('click', onRouteButtonClick)
             commentElem.innerText = comment.comment;
             commentsList.appendChild(commentElem);
         })
-        //console.log(photos)
+        
         photosList.innerText = ''
-
         photos.forEach(photo => {
             let photoElem = document.createElement('img');
             photoElem.src = "static/images/routes/" + photo;
@@ -154,8 +150,17 @@ async function showRouteInfo(id){
             photosList.appendChild(photoElem2);
         })
         
-        
-        //console.log(route.comments);
+        changesList.innerText = ''
+
+        changes.forEach(change =>{
+            let changeElem = document.createElement('p');
+            //commentElem.routeId = route.id
+            //commentElem.addEventListener('click', onRouteButtonClick)
+            changeElem.innerText = change.date;
+            changeElem.points = points;
+            changeElem.addEventListener('click', onChangeElementClick);
+            changesList.appendChild(changeElem);
+        })  
     }
 }
 
@@ -165,6 +170,11 @@ async function getCommentsForRoute(id){
 
 function onRouteButtonClick(event){
     showRouteInfo(event.currentTarget.routeId);
+}
+
+function onChangeElementClick(event){
+    buildRouteOnMap(event.currentTarget.points);
+    changesMode = true;
 }
 
 function onProfileNameClick(){
@@ -259,20 +269,24 @@ async function saveRoute(route){
 
 // Это хуыня для вкладок(основное, комментарии, фотографии), спизженная из интернета.
 function showTabContent(evt, tabContent){
+    if (changesMode){
+        buildRouteOnMap(JSON.parse(route.points));
+        changesMode = false;
+    }
     // Declare all variables
-  var i, tabcontent, tablinks;
+    var i, tabcontent, tablinks;
 
-  // Get all elements with class="tabcontent" and hide them
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
+    // Get all elements with class="tabcontent" and hide them
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
     tabcontent[i].style.display = "none";
-  }
+    }
 
-  // Get all elements with class="tablinks" and remove the class "active"
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
+    // Get all elements with class="tablinks" and remove the class "active"
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
     tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
+    }
 
   // Show the current tab, and add an "active" class to the button that opened the tab
   document.getElementById(tabContent).style.display = "block";

@@ -1,6 +1,5 @@
 var usernameField // Поле для ввода имени пользователя
 var profilePic    // Элемент для отображения фотографии пользователя
-var loadedPhoto   // Переменная для загруженного фото
 
 async function init()
 {
@@ -52,6 +51,11 @@ async function logOut(){
 async function editProfile()
 {
   window.location.href = '/editProfile'; 
+}
+
+async function myRoutes()
+{
+  window.location.href = '/myRoutes'; 
 }
 
 function redirectToLogin(){
