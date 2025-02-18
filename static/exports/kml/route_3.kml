@@ -9,7 +9,7 @@
             </LineStyle>
         </Style>
         <Placemark id="3">
-            <name>A LineString</name>
+            <name>Маршрут</name>
             <styleUrl>#4</styleUrl>
             <LineString id="2">
                 <extrude>1</extrude>

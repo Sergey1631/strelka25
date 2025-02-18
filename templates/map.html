@@ -12,8 +12,13 @@
 </head>
 
 <body>
-    <div class="profile">
-        <p id="profileName" class="profileName" onclick="onProfileNameClick()">profile_name</p>
+    <input type="file" name="importSelector" id="importSelector" style="width:0px">
+    <div class="header">
+        <p id="publicRoutesLink" class="publicRoutesLink" onclick="window.location.replace('/publicRoutes')">Публичные маршруты</p>
+        <p id="myRoutesLink" class="myRoutesLink" onclick="window.location.replace('/myRoutes')">Мои маршруты</p>
+        <p id="createRouteLink" class="createRouteLink" onclick="window.location.replace('/createRoute')">Создать маршрут</p>
+        <p id="importObjects" class="importObjects" onclick="importObjects()"> Импортировать объекты</p>
+        <p id="profileName" class="profileName" onclick="onProfileNameClick()">profile_name</p>  
     </div>
     <p class="publicRoutes">Публичные маршруты</p>
     
@@ -26,7 +31,6 @@
                 <button class="tablinks" onclick="showTabContent(event, 'info')">Основное</button>
                 <button class="tablinks" onclick="showTabContent(event, 'photos')">Фото</button>
                 <button class="tablinks" onclick="showTabContent(event, 'comments')">Комментарии</button>
-                <button class="tablinks" onclick="showTabContent(event, 'changes')">Правки</button>
             </div>
             
             <div id="info" class="tabcontent">
@@ -41,18 +45,14 @@
                 <div class="commentsList">
                     
                 </div>
-                <input type="text" id="commentField"/>
+                <textarea type="text" id="commentField"><textarea>
                 
                 <button onclick="makeComment()">Оставить комментарий</button>
             </div>
             <div id="photos" class="tabcontent">
                 <div class="photosList">
                 </div>                
-            </div>   
-            <div id="changes" class="tabcontent">
-                <div class="changesList">
-                </div>                
-            </div>          
+            </div>           
         </div>  
     </div>
 

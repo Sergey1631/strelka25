@@ -95,7 +95,7 @@ def signUp():
 @app.route('/logout', methods=['GET', 'POST'])
 def logOut():
     session.pop('user_id', None)
-    response = redirect("/map") # Адрес для переадресации
+    response = redirect("/publicRoutes") # Адрес для переадресации
     #response.set_cookie('user_id', id)
     return response 
 
@@ -151,7 +151,7 @@ def saveProfileChanges():
         return 'ok'
     
 #route для отображения карты
-@app.route('/map')
+@app.route('/publicRoutes')
 def showmap():
     return render_template("/map.html")
 
@@ -200,7 +200,7 @@ def getCommentsForRoute(id):
     for com in comments:
         commentDict = {
             'id': com[0],
-            'creator_id': com[1],
+            'creator': getUserInfoById(com[1])['username'],
             'route_id': com[2],
             'comment': com[3],
             'parent_comment_id': com[4]
@@ -344,6 +344,16 @@ def getLocalUser():
         return json.dumps(userDict)
     else: return makeError('fail')
 
+def getUserInfoById(id):
+    connection = sqlite3.connect('database.db')
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute('SELECT * FROM users WHERE id=?', [id])
+    user = cursor.fetchone()
+ 
+    connection.close()
+    return dict(user)
 
 # Формируем словарь и возвращаем его в формате json
 # Чтобы было удобнее работать с данными в JS

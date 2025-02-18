@@ -14,7 +14,6 @@ p{
 .exportLabel {
     margin-top: 10px;
     margin-bottom: 2px;
-    
 }
 
 .exportLabel:hover{
@@ -29,6 +28,7 @@ p{
 .publicRoutes {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 20px;
+    margin-top: 1px;
 }
 .main .routeList{
     display:inline;
@@ -59,10 +59,25 @@ p{
     width: 100%;
 }
 
-.profile{
-    align-self: end;
+.header{
+    display: flex;
+    flex-direction: row;
+
+    width: 100%;
     margin-right: 15px;
-    height: 20px;
+    justify-content: flex-start;
+}
+
+.header *{
+    margin-left: 25px;
+}
+
+.header *:hover{
+    cursor: pointer;
+}
+
+.header .profileName{
+    margin-left: auto;
 }
 
 .photosList{
@@ -81,11 +96,13 @@ p{
 .routeInfo{
     display: flex;
     flex-direction: column;
+    margin-left: 5px;
+}
 
+.routeInfo * {
+    margin-left: 1px;
 }
-.routeInfo *{
-margin-left: 10px;
-}
+
 .routeInfo .routeInfoLabel{
 align-self: center;
 }
@@ -106,7 +123,7 @@ align-self: center;
     border: none;
     outline: none;
     cursor: pointer;
-    padding: 12px 14px;
+    padding: 12px 24px;
     transition: 0.3s;
     margin-left: 0px;
     margin-right: 0px;

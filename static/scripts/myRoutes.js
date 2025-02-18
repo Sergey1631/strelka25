@@ -93,22 +93,7 @@ async function makeComment(){
 }
 
 function buildRouteOnMap(points){
-    myMap.geoObjects.remove(mapRoute);
-    var multiRoute = new ymaps.multiRouter.MultiRoute({   
-        referencePoints: points
-    }, {
-        wayPointVisible: false,
-        boundsAutoApply: true
-    });
-    myMap.geoObjects.add(multiRoute);
-    mapRoute = multiRoute;
-    multiRoute.model.events.add('requestsuccess', function() {
-        var activeRoute = multiRoute.getActiveRoute();
-        var activeRoutePaths = activeRoute.getPaths(); 
-        activeRoutePaths.each(function(path) {
-            pathCoords = path.properties.get('coordinates');
-        });
-    }); 
+    pageHelper.buildRouteOnMap(points);
 }
 
 // Получить информацию о маршруте по его id через getRoute

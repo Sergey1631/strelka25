@@ -12,7 +12,8 @@ var changesList;
 var changesMode;
 var pathCoords;
 
-var publicRoutes; // переменная для хранения всех публичных маршрутов
+
+var publicRoutes;// переменная для хранения всех публичных маршрутов
 
 var localUser; // переменная для хранения вошедшего пользователя
 
@@ -45,7 +46,7 @@ async function init(){
     myMap = new ymaps.Map("map", {
         center: [55.76, 37.64],     
         zoom: 7
-    });
+    }), objectManager = new ymaps.ObjectManager();
 
     
     var publicRoutes = await getPublicRoutes();
@@ -93,23 +94,7 @@ async function makeComment(){
 }
 
 function buildRouteOnMap(points){
-    myMap.geoObjects.remove(mapRoute);
-    console.log(points)
-    var multiRoute = new ymaps.multiRouter.MultiRoute({   
-        referencePoints: points
-    }, {
-        wayPointVisible: false,
-        boundsAutoApply: true
-    });
-    myMap.geoObjects.add(multiRoute);
-    mapRoute = multiRoute;
-    multiRoute.model.events.add('requestsuccess', function() {
-        var activeRoute = multiRoute.getActiveRoute();
-        var activeRoutePaths = activeRoute.getPaths(); 
-        activeRoutePaths.each(function(path) {
-            pathCoords = path.properties.get('coordinates');
-        });
-    }); 
+   pageHelper.buildRouteOnMap(points)
 }
 
 // Получить информацию о маршруте по его id через getRoute
@@ -128,8 +113,20 @@ async function showRouteInfo(id){
         
         commentsList.innerText = ''
         route.comments.forEach(comment => {
-            let commentElem = document.createElement('p');
-            commentElem.innerText = comment.comment;
+            let commentElem = document.createElement('div');
+            commentElem.style.border = '1px solid #ccc';
+
+            let commentCreatorElem = document.createElement('p');
+            commentCreatorElem.style.marginTop = '5px'
+            commentCreatorElem.style.marginBottom = '0px'
+            commentCreatorElem.style.fontSize = '18px'
+
+            let commentTextElem = document.createElement('p');
+            commentElem.appendChild(commentCreatorElem);
+
+            commentElem.appendChild(commentTextElem);
+            commentTextElem.innerText = comment.comment;
+            commentCreatorElem.innerText = comment.creator;
             commentsList.appendChild(commentElem);
         })
         
@@ -265,6 +262,28 @@ async function saveRoute(route){
     const parsedResult = JSON.parse(result)
     var name = parsedResult.name;
     return name
+}
+
+async function importObjects(){
+    var input = document.getElementById('importSelector');
+    input.type = 'file';
+
+    // onchange - event вызываемый, если в input будет загружен какой либо файл
+    // Добавляем в onchange обработку выбранного фото 
+    input.onchange = async e => { 
+
+        var file = e.target.files[0]; 
+        var url = URL.createObjectURL(file);
+        console.log(url)
+        response = await fetch(url);
+        var result = await response.json();
+        
+        pageHelper.geoJsonImport(result);
+    }
+    
+
+    input.click(); 
+
 }
 
 // Это хуыня для вкладок(основное, комментарии, фотографии), спизженная из интернета.

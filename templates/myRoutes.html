@@ -11,10 +11,14 @@
 </head>
 
 <body>
-    <div class="profile">
+    <input type="file" name="importSelector" id="importSelector" style="width:0px">
+    <div class="header">
+        <p id="publicRoutesLink" class="publicRoutesLink" onclick="window.location.replace('/publicRoutes')">Публичные маршруты</p>
+        <p id="myRoutesLink" class="myRoutesLink" onclick="window.location.replace('/myRoutes')">Мои маршруты</p>
+        <p id="createRouteLink" class="createRouteLink" onclick="window.location.replace('/createRoute')">Создать маршрут</p>
         <p id="profileName" class="profileName" onclick="onProfileNameClick()">profile_name</p>
     </div>
-    <p class="publicRoutes">Мои маршруты</p>
+    <p class="myRoutesLabel">Мои маршруты</p>
     
     <div class="main">
         <div class="routeList" >
