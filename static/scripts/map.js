@@ -31,7 +31,6 @@ async function init(){
     routeList = document.getElementsByClassName('routeList')[0];
     commentsList = document.getElementsByClassName('commentsList')[0];
     photosList = document.getElementsByClassName('photosList')[0];
-    changesList = document.getElementsByClassName('changesList')[0];
     user = await pageHelper.getLocalUserInfo();
 
     if (user.error=='fail') {
@@ -104,7 +103,6 @@ async function showRouteInfo(id){
         route = await getRoute(id);
         var points = JSON.parse(route.points);
         var photos = JSON.parse(route.photos);
-        var changes = JSON.parse(route.changes);
         currentRoute = route;
         buildRouteOnMap(points);
         routeNameText.innerText = "Название маршрута: " + route.name
@@ -147,17 +145,6 @@ async function showRouteInfo(id){
             photosList.appendChild(photoElem2);
         })
         
-        changesList.innerText = ''
-
-        changes.forEach(change =>{
-            let changeElem = document.createElement('p');
-            //commentElem.routeId = route.id
-            //commentElem.addEventListener('click', onRouteButtonClick)
-            changeElem.innerText = change.date;
-            changeElem.points = points;
-            changeElem.addEventListener('click', onChangeElementClick);
-            changesList.appendChild(changeElem);
-        })  
     }
 }
 
@@ -169,10 +156,7 @@ function onRouteButtonClick(event){
     showRouteInfo(event.currentTarget.routeId);
 }
 
-function onChangeElementClick(event){
-    buildRouteOnMap(event.currentTarget.points);
-    changesMode = true;
-}
+
 
 function onProfileNameClick(){
     if (localUser){

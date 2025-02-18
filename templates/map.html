@@ -13,6 +13,7 @@
 
 <body>
     <input type="file" name="importSelector" id="importSelector" style="width:0px">
+    
     <div class="header">
         <p id="publicRoutesLink" class="publicRoutesLink" onclick="window.location.replace('/publicRoutes')">Публичные маршруты</p>
         <p id="myRoutesLink" class="myRoutesLink" onclick="window.location.replace('/myRoutes')">Мои маршруты</p>
@@ -21,7 +22,6 @@
         <p id="profileName" class="profileName" onclick="onProfileNameClick()">profile_name</p>  
     </div>
     <p class="publicRoutes">Публичные маршруты</p>
-    
     <div class="main">
         <div class="routeList" >
         </div>
@@ -41,6 +41,10 @@
                 <p class='exportLabel' onclick="exportRoute('kml')">Экспорт маршрута в kml</p>
                 <p class='exportLabel' onclick="exportRoute('kmz')">Экспорт маршрута в kmz</p>
             </div>
+            <div id="photos" class="tabcontent">
+                <div class="photosList">
+                </div>                
+            </div>  
             <div id="comments" class="tabcontent">
                 <div class="commentsList">
                     
@@ -49,10 +53,7 @@
                 
                 <button onclick="makeComment()">Оставить комментарий</button>
             </div>
-            <div id="photos" class="tabcontent">
-                <div class="photosList">
-                </div>                
-            </div>           
+                     
         </div>  
     </div>
 

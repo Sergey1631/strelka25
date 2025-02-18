@@ -39,7 +39,6 @@ var pageHelper = {
   },
   buildRouteOnMap: function(points){
     myMap.geoObjects.remove(mapRoute);
-    console.log(points)
     var multiRoute = new ymaps.multiRouter.MultiRoute({   
         referencePoints: points
     }, {
@@ -57,13 +56,12 @@ var pageHelper = {
     }); 
   },
   geoJsonImport: function(json){
-    console.log(flip(json))
     json.features.forEach(f => 
     {
       var myGeoObject = new ymaps.GeoObject({
         geometry: {
           type: f.geometry.type, // тип геометрии - точка
-          coordinates: [f.geometry.coordinates[1], f.geometry.coordinates[0]]// координаты точки
+          coordinates: f.geometry.coordinates// координаты точки
         }
       });
       myMap.geoObjects.add(myGeoObject);
