@@ -2,15 +2,18 @@ var usernameField // Поле для ввода имени пользовате�
 var profilePic    // Элемент для отображения фотографии пользователя
 var loadedPhoto   // Переменная для загруженного фото
 
+var localUser;
 async function init()
 {
+  // Получаем данные о локальном пользователе 
+  // (пользователе который сейчас вошёл в свой аккаунт)
+  localUser = await pageHelper.getLocalUserInfo();
+  pageHelper.initProfileName();
+
   usernameField = document.getElementById('username')
   profilePic = document.getElementById('profilePic')
 
-  // Получаем данные о локальном пользователе 
-  // (пользователе который сейчас вошёл в свой аккаунт)
-  localUser = await pageHelper.getLocalUserInfo()
-
+  
   // Получаем имя пользователя и записываем его в поле ввода имени
   usernameField.value = localUser.username
 
@@ -37,7 +40,9 @@ async function saveChanges(){
     body: data
   })
 }
-
+async function redirectToProfile(){
+  window.location.href = '/profile'
+}
 // Функция для загрузки новой фотографии
 async function editPhoto()
 {

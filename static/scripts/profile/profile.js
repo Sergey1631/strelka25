@@ -1,12 +1,14 @@
-var usernameField // Поле для ввода имени пользователя
-var profilePic    // Элемент для отображения фотографии пользователя
-
+var usernameField; // Поле для ввода имени пользователя
+var profilePic;    // Элемент для отображения фотографии пользователя
+var localUser;
 async function init()
 {
   usernameField = document.getElementById('username')
   profilePic = document.getElementById('profilePic')
 
-  localUser = await pageHelper.getLocalUserInfo()
+  localUser = await pageHelper.getLocalUserInfo();
+  pageHelper.initProfileName()
+
   usernameField.innerText = localUser.username
 
   profilePic.src = "static/images/profilePics/" + localUser.picname

@@ -14,12 +14,20 @@
 <body>
     <input type="file" name="importSelector" id="importSelector" style="width:0px">
     
+
+    <div id="viewPhoto">
+        <img id="image-front" src="/static/images/routes/kolosunin.jpg"/>
+        <button id="closeButton">X</button>
+    </div>
+    
+
+
     <div class="header">
         <p id="publicRoutesLink" class="publicRoutesLink" onclick="window.location.replace('/publicRoutes')">Публичные маршруты</p>
         <p id="myRoutesLink" class="myRoutesLink" onclick="window.location.replace('/myRoutes')">Мои маршруты</p>
         <p id="createRouteLink" class="createRouteLink" onclick="window.location.replace('/createRoute')">Создать маршрут</p>
         <p id="importObjects" class="importObjects" onclick="importObjects()"> Импортировать объекты</p>
-        <p id="profileName" class="profileName" onclick="onProfileNameClick()">profile_name</p>  
+        <p id="profileName" class="profileName" onclick="pageHelper.onProfileNameClick()">profile_name</p>  
     </div>
     <p class="publicRoutes">Публичные маршруты</p>
     <div class="main">
@@ -37,9 +45,9 @@
                 <p id="routeName">ROUTE_NAME</p>
                 <p id="routeDescription">ROUTE_DESCRIPTION</p>
                 <p id="routeRating">ROUTE_RATING</p>
-                <p class='exportLabel' onclick="exportRoute('gpx')">Экспорт маршрута в gpx</p>
-                <p class='exportLabel' onclick="exportRoute('kml')">Экспорт маршрута в kml</p>
-                <p class='exportLabel' onclick="exportRoute('kmz')">Экспорт маршрута в kmz</p>
+                <p class='exportLabel' onclick="pageHelper.exportRoute('gpx')">Экспорт маршрута в gpx</p>
+                <p class='exportLabel' onclick="pageHelper.exportRoute('kml')">Экспорт маршрута в kml</p>
+                <p class='exportLabel' onclick="pageHelper.exportRoute('kmz')">Экспорт маршрута в kmz</p>
             </div>
             <div id="photos" class="tabcontent">
                 <div class="photosList">
@@ -49,9 +57,9 @@
                 <div class="commentsList">
                     
                 </div>
-                <textarea type="text" id="commentField"><textarea>
+                <textarea type="text" id="commentField" class="commentField">Введите комментарий</textarea>
                 
-                <button onclick="makeComment()">Оставить комментарий</button>
+                <button onclick="pageHelper.makeComment()">Оставить комментарий</button>
             </div>
                      
         </div>  
