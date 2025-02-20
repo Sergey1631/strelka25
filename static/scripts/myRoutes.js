@@ -31,15 +31,9 @@ async function init(){
     commentsList = document.getElementsByClassName('commentsList')[0];
     photosList = document.getElementsByClassName('photosList')[0];
     changesList = document.getElementsByClassName('changesList')[0];
-    user = await pageHelper.getLocalUserInfo();
 
-    if (user.error=='fail') {
-        profileNameText.innerText = 'Войти'
-    }
-    else{
-        profileNameText.innerText = user.username
-        localUser = user;
-    }
+    localUser = await pageHelper.getLocalUserInfo();
+    pageHelper.initProfileName();
 
     // Создание карты.
     myMap = new ymaps.Map("map", {
@@ -148,9 +142,6 @@ async function showRouteInfo(id){
     }
 }
 
-async function getCommentsForRoute(id){
-
-}
 
 function onRouteButtonClick(event){
     showRouteInfo(event.currentTarget.routeId);
@@ -161,47 +152,6 @@ function onChangeElementClick(event){
     changesMode = true;
 }
 
-function onProfileNameClick(){
-    if (localUser){
-        toProfile();
-    }
-    else{
-        toAuth();
-    }
-}
-
-async function exportRoute(type){
-    var url = '/export'
-
-    let data = JSON.stringify({ 
-        id: currentRoute.id,
-        points: pathCoords, 
-        export_type: type
-    })
-    //console.log(data)
-
-    let response = await fetch(url, {
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-        },
-        method: 'POST',
-        body: data
-    });
-    var result = await response.text();
-
-    exporturi = '/static/exports/' + type + "/" + result;
-    pageHelper.downloadURI(exporturi, type + '_export')
-    
-    /*console.log()
-    const parsedResult = JSON.parse(result);*/
-}
-
-function toProfile(){
-    window.location.href = '/profile'; 
-}
-function toAuth(){
-    window.location.href = '/login'; 
-}
 
 // Получение маршрута по его id
 async function getRoute(id){

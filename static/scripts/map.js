@@ -31,15 +31,10 @@ async function init(){
     routeList = document.getElementsByClassName('routeList')[0];
     commentsList = document.getElementsByClassName('commentsList')[0];
     photosList = document.getElementsByClassName('photosList')[0];
-    user = await pageHelper.getLocalUserInfo();
+    
+    localUser = await pageHelper.getLocalUserInfo();
 
-    if (user.error=='fail') {
-        profileNameText.innerText = 'Войти'
-    }
-    else{
-        profileNameText.innerText = user.username
-        localUser = user;
-    }
+    pageHelper.initProfileName();
 
     // Создание карты.
     myMap = new ymaps.Map("map", {
@@ -100,7 +95,7 @@ function buildRouteOnMap(points){
 // и вывод полученных данных пользователю
 async function showRouteInfo(id){
     if(id != currentRouteId){
-        route = await getRoute(id);
+        route = await pageHelper.getRoute(id);
         var points = JSON.parse(route.points);
         var photos = JSON.parse(route.photos);
         currentRoute = route;
@@ -111,21 +106,7 @@ async function showRouteInfo(id){
         
         commentsList.innerText = ''
         route.comments.forEach(comment => {
-            let commentElem = document.createElement('div');
-            commentElem.style.border = '1px solid #ccc';
-
-            let commentCreatorElem = document.createElement('p');
-            commentCreatorElem.style.marginTop = '5px'
-            commentCreatorElem.style.marginBottom = '0px'
-            commentCreatorElem.style.fontSize = '18px'
-
-            let commentTextElem = document.createElement('p');
-            commentElem.appendChild(commentCreatorElem);
-
-            commentElem.appendChild(commentTextElem);
-            commentTextElem.innerText = comment.comment;
-            commentCreatorElem.innerText = comment.creator;
-            commentsList.appendChild(commentElem);
+            pageHelper.showComment(comment.creator, comment.comment)
         })
         
         photosList.innerText = ''
@@ -148,56 +129,9 @@ async function showRouteInfo(id){
     }
 }
 
-async function getCommentsForRoute(id){
-
-}
 
 function onRouteButtonClick(event){
     showRouteInfo(event.currentTarget.routeId);
-}
-
-
-
-function onProfileNameClick(){
-    if (localUser){
-        toProfile();
-    }
-    else{
-        toAuth();
-    }
-}
-
-async function exportRoute(type){
-    var url = '/export'
-
-    let data = JSON.stringify({ 
-        id: currentRoute.id,
-        points: pathCoords, 
-        export_type: type
-    })
-    //console.log(data)
-
-    let response = await fetch(url, {
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-        },
-        method: 'POST',
-        body: data
-    });
-    var result = await response.text();
-
-    exporturi = '/static/exports/' + type + "/" + result;
-    pageHelper.downloadURI(exporturi, type + '_export')
-    
-    /*console.log()
-    const parsedResult = JSON.parse(result);*/
-}
-
-function toProfile(){
-    window.location.href = '/profile'; 
-}
-function toAuth(){
-    window.location.href = '/login'; 
 }
 
 // Получение маршрута по его id
@@ -262,7 +196,7 @@ async function importObjects(){
         response = await fetch(url);
         var result = await response.json();
         
-        pageHelper.geoJsonImport(result);
+        pageHelper.geoJsonImport(pageHelper.flipJsonCoords(result));
     }
     
 

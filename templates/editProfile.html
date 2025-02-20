@@ -9,12 +9,23 @@
 </head>
 
 <body onload="init()">
-    <h1>Настройка профиля</h1>
     <script src="/static/scripts/profile/editProfile.js"></script>
     <script src="/static/scripts/pageHelper.js"></script>
+
+    <div class="header">
+        <p id="publicRoutesLink" class="publicRoutesLink" onclick="window.location.replace('/publicRoutes')">Публичные маршруты</p>
+        <p id="myRoutesLink" class="myRoutesLink" onclick="window.location.replace('/myRoutes')">Мои маршруты</p>
+        <p id="createRouteLink" class="createRouteLink" onclick="window.location.replace('/createRoute')">Создать маршрут</p>
+        <p id="profileName" class="profileName" onclick="pageHelper.onProfileNameClick()">profile_name</p>  
+    </div>
+    <h1>Настройка профиля</h1>
+    
     <input type="file" name="photoSelector" id="photoSelector" style="width:0px">
     <img id="profilePic" class="profilePic" onclick="editPhoto()">
     
+    
+
+
     <div class="info">
         <div class="username">
             <p>Имя пользователя</p>

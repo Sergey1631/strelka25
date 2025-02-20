@@ -179,14 +179,6 @@ def export():
         if export_type == 'kml':
             return exportRoutes.export_kml(points, route_id)
 
-def getPhotosForRoute(id):
-    connection = sqlite3.connect('database.db')
-
-    cursor = connection.cursor()
-    cursor.execute('SELECT * FROM comments WHERE route_id=?', [id])
-    comments = cursor.fetchall()
-    connection.close()
-    return comments
 # Получаем комментарии к маршруту по его id и возвращаем массив словарей
 def getCommentsForRoute(id):
     connection = sqlite3.connect('database.db')
@@ -238,11 +230,9 @@ def saveRoute():
         connection = sqlite3.connect('database.db')
 
         cursor = connection.cursor()
-        
-        points = jsonData['route']
-        user = (1, str(jsonData))
+        route = (1, str(jsonData))
 
-        cursor.execute('INSERT INTO routes (creator_id, points) VALUES (?, ?)', user)
+        cursor.execute('INSERT INTO routes (creator_id, points) VALUES (?, ?)', route)
         connection.commit()
         connection.close()
         return 'ok'
@@ -259,6 +249,8 @@ def getPublicRoutes():
     routesArr = []
     for route in routes:
         routesArr.append(makeRouteDict(route))
+
+    connection.close()
     return routesArr
 
 # Получаем все свои маршруты
@@ -274,6 +266,8 @@ def getMyRoutes():
     routesArr = []
     for route in routes:
         routesArr.append(makeRouteDict(route))
+
+    connection.close()
     return routesArr
 
 # Получаем маршрут и информацию о нём из БД по его id
@@ -342,7 +336,9 @@ def getLocalUser():
 
         connection.close()
         return json.dumps(userDict)
-    else: return makeError('fail')
+    else: 
+        connection.close()
+        return makeError('fail')
 
 def getUserInfoById(id):
     connection = sqlite3.connect('database.db')
