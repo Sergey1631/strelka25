@@ -29,8 +29,33 @@ var pageHelper = {
     window.location.href = '/login'; 
   },
 
-  onPhotoClick: function(){
+  onPhotoViewCloseClick: function(){
+    document.getElementById('viewPhoto').style.display = 'none';
+  },
+
+  
+  onPhotoClick: function(event){
+    pageHelper.openPhotoById(event.currentTarget.photoId);
+    document.getElementById('routePhotosLabel').innerText = 'Фотографии к маршруту ' + currentRoute.name;
+    /*
+    document.getElementById('opennedImage').src = event.currentTarget.src;
+    currentPhotoId = event.currentTarget.photoId;*/
     document.getElementById('viewPhoto').style.display = 'block';
+  },
+  openPhotoById: function(id) {
+    if (id > -1 & id < photos.length) {
+      document.getElementById('opennedImage').src = '/static/images/routes/' + photos[id];
+      currentPhotoId = id;
+      console.log(id);
+    }
+  },
+
+  nextPhoto: function(){
+    this.openPhotoById(currentPhotoId + 1);
+  },
+
+  prevPhoto: function(){
+    this.openPhotoById(currentPhotoId - 1);
   },
 
   getRoute: async function(id){

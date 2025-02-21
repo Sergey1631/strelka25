@@ -39,6 +39,14 @@ body {
     
 }
 
+.photosList *{
+    margin: 5px;
+}
+
+.photosList *:hover{
+    cursor: pointer;
+}
+
 
 .commentsList *{
     margin-bottom: 10px;
@@ -68,16 +76,50 @@ body {
     z-index: 600;
 }
 
-#closeButton{
+#nextPhotoButton, #prevPhotoButton, #closeButton{
+    background-color: rgba(0, 0, 0, 0);
+    color: white;
+    border: 0px;
     width: 50px;
     height: 50px;
     font-size: large;
     position: absolute; 
+}
+
+#routePhotosLabel{
+    font-size: larger;
+    position: absolute; 
+    top:5%;
+    left: 4%;
+}
+
+#viewPhoto *:hover{
+    cursor: pointer;
+}
+
+#prevPhotoButton{
+    transform: translate(-50%, -50%);
+    top:50%;
+    left: 4%;
+}
+
+#nextPhotoButton{
+    transform: translate(-50%, -50%);
+
+    top: 50%; 
+    right: 1%;
+}
+
+#prevPhotoButton{
+    left: 4%
+}
+
+#closeButton{
     top: 2%; 
     right: 1%;
 }
 
-#image-front{
+#opennedImage{
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -156,6 +198,7 @@ p, b{
 }
 
 .photosList{
+    
     display: grid;
     grid-template-columns: repeat(3, 100px);
 }
@@ -177,7 +220,7 @@ p, b{
 }
 
 .routeInfo * {
-    margin-left: 1px;
+
 }
 
 .routeInfo .routeInfoLabel{

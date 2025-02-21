@@ -12,6 +12,8 @@ var changesList;
 var changesMode;
 var pathCoords;
 
+var photos;
+var currentPhotoId;
 
 var publicRoutes;// переменная для хранения всех публичных маршрутов
 
@@ -97,7 +99,7 @@ async function showRouteInfo(id){
     if(id != currentRouteId){
         route = await pageHelper.getRoute(id);
         var points = JSON.parse(route.points);
-        var photos = JSON.parse(route.photos);
+        photos = JSON.parse(route.photos);
         currentRoute = route;
         buildRouteOnMap(points);
         routeNameText.innerText = "Название маршрута: " + route.name
@@ -110,27 +112,31 @@ async function showRouteInfo(id){
         })
         
         photosList.innerText = ''
+        // В данном случае photo - название файла фотографии на серваке.
+        i = 0;
         photos.forEach(photo => {
             let photoElem = document.createElement('img');
             photoElem.src = "static/images/routes/" + photo;
             photoElem.style.height = '100px';
             photoElem.style.weight = '100px';
-
+            photoElem.photoId = photos.indexOf(photo);
+            i++;
+            
             photoElem.addEventListener('click', pageHelper.onPhotoClick);
 
             photosList.appendChild(photoElem);
-
+            
+            /*
             let photoElem2 = document.createElement('img');
             photoElem2.src = "static/images/routes/" + photo;
             photoElem2.style.height = '100px';
             photoElem2.style.weight = '100px';
 
-            photosList.appendChild(photoElem2);
+            photosList.appendChild(photoElem2);*/
         })
         
     }
 }
-
 
 function onRouteButtonClick(event){
     showRouteInfo(event.currentTarget.routeId);

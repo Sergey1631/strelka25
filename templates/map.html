@@ -16,8 +16,11 @@
     
 
     <div id="viewPhoto">
-        <img id="image-front" src="/static/images/routes/kolosunin.jpg"/>
-        <button id="closeButton">X</button>
+        <img id="opennedImage" src="/static/images/routes/kolosunin.jpg"/>
+        <button id="closeButton" onclick="pageHelper.onPhotoViewCloseClick()">X</button>
+        <p id="routePhotosLabel">Фотографии маршрута route</p>
+        <button id="nextPhotoButton" onclick="pageHelper.nextPhoto()">></button>
+        <button id="prevPhotoButton" onclick="pageHelper.prevPhoto()"><</button>
     </div>
     
 
