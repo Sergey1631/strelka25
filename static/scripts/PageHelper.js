@@ -72,6 +72,65 @@ var pageHelper = {
     pageHelper.downloadURI(exporturi, type + '_export')
   },
 
+  initProfileName: async function(text){
+    profileNameText = document.getElementById('profileName');
+
+    if (localUser.error=='fail') {
+        profileNameText.innerText = 'Войти'
+    }
+    else{
+        profileNameText.innerText = localUser.username
+    }
+  },
+
+  onProfileNameClick: function(){
+    if (localUser){
+      window.location.href = '/profile'; 
+    }
+    else{
+      window.location.href = '/auth'; 
+    }
+  },
+
+  getRoute: async function(id){
+    var url = '/getRoute'
+
+    let data = JSON.stringify({ route_id: id })
+
+    let response = await fetch(url, {
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+        },
+        method: 'POST',
+        body: data
+    });
+    var result = await response.text();
+    const parsedResult = JSON.parse(result)
+    return parsedResult
+  },
+
+  exportRoute: async function(type){
+    var url = '/export'
+
+    let data = JSON.stringify({ 
+        id: currentRoute.id,
+        points: pathCoords, 
+        export_type: type
+    })
+
+    let response = await fetch(url, {
+        headers: {
+            "Content-Type": "application/json; charset=utf-8",
+        },
+        method: 'POST',
+        body: data
+    });
+    var result = await response.text();
+
+    exporturi = '/static/exports/' + type + "/" + result;
+    pageHelper.downloadURI(exporturi, type + '_export')
+  },
+
   // Запрос на получение локального пользователя из flask
   // (так я называю пользователя вошедшего в свой аккаунт)
   getLocalUserInfo: async function(){
