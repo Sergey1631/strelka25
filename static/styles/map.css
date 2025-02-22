@@ -47,6 +47,10 @@ body {
     cursor: pointer;
 }
 
+#photos{
+    height: 100%;
+}
+
 
 .commentsList *{
     margin-bottom: 10px;
@@ -126,6 +130,7 @@ body {
     position:absolute;
     place-content: center;
     z-index: 999;
+    max-width: 70%;
 }
 
 .main{
@@ -170,8 +175,6 @@ p, b{
 }
 
 
-
-
 .main .routeList *{
     text-align: center;
     width: 100%;
@@ -198,9 +201,9 @@ p, b{
 }
 
 .photosList{
-    
-    display: grid;
-    grid-template-columns: repeat(3, 100px);
+    height: 100%;
+    display: inline-block;
+    overflow-y: auto;
 }
 
 .profile .profileName{
@@ -212,6 +215,7 @@ p, b{
 
 
 .routeInfo{
+    width: 500px;
     height: 80%;
     margin-left: 5px;
     margin-right: 5px;
@@ -220,7 +224,7 @@ p, b{
 }
 
 .routeInfo * {
-
+    text-align: center;
 }
 
 .routeInfo .routeInfoLabel{

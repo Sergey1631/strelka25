@@ -117,11 +117,10 @@ async function showRouteInfo(id){
         photos.forEach(photo => {
             let photoElem = document.createElement('img');
             photoElem.src = "static/images/routes/" + photo;
-            photoElem.style.height = '100px';
-            photoElem.style.weight = '100px';
+            
             photoElem.photoId = photos.indexOf(photo);
             i++;
-            
+            photoElem.style.maxWidth = '300px';
             photoElem.addEventListener('click', pageHelper.onPhotoClick);
 
             photosList.appendChild(photoElem);
@@ -202,9 +201,21 @@ async function importObjects(){
         var url = URL.createObjectURL(file);
         console.log(url)
         response = await fetch(url);
-        var result = await response.json();
+        var result = await response.text();
         
-        pageHelper.geoJsonImport(pageHelper.flipJsonCoords(result));
+        fileType = file.name.split('.')[1]
+
+        console.log(fileType);
+        if (fileType == 'json' | fileType == 'geoJson')
+        {
+            pageHelper.geoJsonImport(pageHelper.flipJsonCoords(result));
+        };
+
+        if (fileType == 'osm'){
+            parser = new DOMParser();
+            xmlDoc = parser.parseFromString(result,"text/xml");
+            console.log(osmtogeojson(xmlDoc));
+        }
     }
     
 
