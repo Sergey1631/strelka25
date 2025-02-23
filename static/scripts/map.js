@@ -40,11 +40,17 @@ async function init(){
 
     // Создание карты.
     myMap = new ymaps.Map("map", {
-        center: [55.76, 37.64],     
+        center: [55.404039, 43.830671],     
         zoom: 7
     }), objectManager = new ymaps.ObjectManager();
     myMap.geoObjects.add(objectManager);
     
+    var myGeocoder = ymaps.geocode(myMap.getCenter());
+    myGeocoder.then(function(res) {
+        myMap.geoObjects.add(res.geoObjects);
+    });
+
+
     var publicRoutes = await getPublicRoutes();
     publicRoutes.forEach(route => {
         let btn = document.createElement('button');
