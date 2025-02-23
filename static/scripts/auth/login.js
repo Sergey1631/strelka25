@@ -29,12 +29,11 @@ async function login()
     }
     else
     {
-      var error = ""
 
       // Получаем ответ на запрос
       var result = await response.text();
       const parsedResult = JSON.parse(result)
-      error = parsedResult.error;
+      var error = parsedResult.error;
 
       
       pageHelper.setErrorText(error)

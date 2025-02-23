@@ -43,7 +43,7 @@ async function init(){
         center: [55.76, 37.64],     
         zoom: 7
     }), objectManager = new ymaps.ObjectManager();
-
+    myMap.geoObjects.add(objectManager);
     
     var publicRoutes = await getPublicRoutes();
     publicRoutes.forEach(route => {
@@ -62,35 +62,6 @@ async function init(){
     console.log(JSON.stringify(referencePoints))*/
     //saveRoute()
 }
-
-// Функция, чтобы оставить комментарий к маршруту
-async function makeComment(){
-    var url = '/makeComment'
-
-    let data = JSON.stringify({ 
-        route_id: currentRoute.id, 
-        comment: commentField.value
-    })
-
-    let response = await fetch(url, {
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-        },
-        method: 'POST',
-        body: data
-    });
-    var result = await response.text();
-    const parsedResult = JSON.parse(result);
-    if(parsedResult.error != null){
-        alert(parsedResult.error);
-    }
-    else{
-        alert(parsedResult)
-    }
-}
-
-
-
 
 
 function onRouteButtonClick(event){
@@ -172,13 +143,43 @@ async function importObjects(){
         if (fileType == 'osm'){
             parser = new DOMParser();
             xmlDoc = parser.parseFromString(result,"text/xml");
-            pageHelper.geoJsonImport(osmtogeojson(xmlDoc));
+            
+            flippedXML = pageHelper.flipJsonCoords(osmtogeojson(xmlDoc));
+            
+            nobs = remove_bs(flippedXML);
+            objectManager.add(nobs);
+            //pageHelper.geoJsonImport(osmtogeojson(xmlDoc));
         }
     }
     
 
     input.click(); 
+}
 
+function remove_bs(json){
+    bs = []
+    json.features.length
+    json.features.forEach(f =>{
+        if (f.properties.building != null){
+
+            bs.push(f);
+        }
+    }
+    );
+
+    for (let i = 0; i < json.features.length; i++) {
+        if (json.features[i].properties.building != null){
+            bs.push(f);
+        }
+    }
+
+    bs.forEach(b => {
+        i = json.features.indexOf(b);
+        console.log(i);
+        json.features.splice(i, 1);
+    });
+
+    return json;
 }
 
 // Это хуыня для вкладок(основное, комментарии, фотографии), спизженная из интернета.
