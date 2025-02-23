@@ -8,6 +8,8 @@
     <script src="https://api-maps.yandex.ru/2.1/?apikey=d837f1b4-7457-46b1-84b4-9f1b26718d5b&lang=ru_RU" type="text/javascript"></script>
     <script src="/static/scripts/myRoutes.js"></script>
     <script src="/static/scripts/pageHelper.js"></script>
+    <script src='/static/scripts/osmtogeojson.js'></script>
+
 </head>
 
 <body>
@@ -16,8 +18,18 @@
         <p id="publicRoutesLink" class="publicRoutesLink" onclick="window.location.replace('/publicRoutes')">Публичные маршруты</p>
         <p id="myRoutesLink" class="myRoutesLink" onclick="window.location.replace('/myRoutes')">Мои маршруты</p>
         <p id="createRouteLink" class="createRouteLink" onclick="window.location.replace('/createRoute')">Создать маршрут</p>
-        <p id="profileName" class="profileName" onclick="onProfileNameClick()">profile_name</p>
+        <p id="importObjects" class="importObjects" onclick="importObjects()"> Импортировать объекты</p>
+        <p id="profileName" class="profileName" onclick="pageHelper.onProfileNameClick()">profile_name</p>  
     </div>
+
+    <div id="viewPhoto">
+        <img id="opennedImage" src="/static/images/routes/kolosunin.jpg"/>
+        <button id="closeButton" onclick="pageHelper.onPhotoViewCloseClick()">X</button>
+        <p id="routePhotosLabel">Фотографии маршрута route</p>
+        <button id="nextPhotoButton" onclick="pageHelper.nextPhoto()">></button>
+        <button id="prevPhotoButton" onclick="pageHelper.prevPhoto()"><</button>
+    </div>
+
     <p class="myRoutesLabel">Мои маршруты</p>
     
     <div class="main">
@@ -48,7 +60,7 @@
                 </div>
                 <input type="text" id="commentField"/>
                 
-                <button onclick="makeComment()">Оставить комментарий</button>
+                <button onclick="pageHelper.makeComment()">Оставить комментарий</button>
             </div>
             <div id="photos" class="tabcontent">
                 <div class="photosList">

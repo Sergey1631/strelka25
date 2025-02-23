@@ -8,6 +8,9 @@ body {
     background-color: rgb(45, 45, 45);
     height: 100%;
 }
+
+/* ---------Шапка------ */
+
 .header{
     display: flex;
     flex-direction: row;
@@ -19,6 +22,32 @@ body {
     margin-bottom: 15px;
 }
 
+.header *{
+    margin-left: 25px;
+    font-size: 16px;
+}
+
+p, b{
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.header *:hover{
+    cursor: pointer;
+}
+
+.header .profileName{
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+.profile .profileName{
+    
+}
+.profile .profileName:hover {
+    cursor:pointer
+}
+
 .publicRoutes {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 20px;
@@ -26,36 +55,14 @@ body {
     margin-bottom: 15px;
     margin-left: 10px;
 }
-.commentsList{
-    overflow-y: auto;
-    height: 90%;
+
+.main{
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: row;
+    width: 100%;
+    height: 85%;
 }
 
-#comments{
-    height: 100%;
-    overflow-y: auto;
-    
-}
-
-.photosList *{
-    margin: 5px;
-}
-
-.photosList *:hover{
-    cursor: pointer;
-}
-
-#photos{
-    height: 100%;
-}
-
-
-.commentsList *{
-    margin-bottom: 10px;
-
-}
 .main .routeList{
     display:inline-block;
     align-self: flex-start;
@@ -65,6 +72,63 @@ body {
     width: 350px;
     height: 100%;
     overflow-y: auto;
+}
+
+.main .routeList *{
+    text-align: center;
+    width: 100%;
+    height: 45px;
+    background-color:rgb(0, 115, 255);
+    border: 5cm;
+    border-radius: 3px;
+    margin-top: 5px;
+    font-size: 16px;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.map{
+    width: 100%; 
+    height: 100%;
+    margin-bottom: 10px;
+    border-right: 50px;
+}
+
+.routeInfo{
+    width: 500px;
+    height: 80%;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.routeInfo * {
+    text-align: center;
+}
+
+.routeInfo .routeInfoLabel{
+align-self: center;
+}
+
+.exportLabel {
+    margin-top: 10px;
+    margin-bottom: 2px;
+}
+
+.exportLabel:hover{
+    cursor: pointer;
+}
+
+/*---------- Фотографии ------------*/
+
+#photos{
+    height: 100%;
+}
+.photosList *{
+    margin: 5px;
+}
+
+.photosList *:hover{
+    cursor: pointer;
 }
 
 #viewPhoto{
@@ -133,103 +197,38 @@ body {
     max-width: 70%;
 }
 
-.main{
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 85%;
-}
-
-.commentField{
-    resize: none;
-}
-
-.commentField{
-    resize: none;
-}
-
-.map{
-    width: 100%; 
-    height: 100%;
-    margin-bottom: 10px;
-    border-right: 50px;
-}
-
-.header *{
-    margin-left: 25px;
-    font-size: 16px;
-}
-
-p, b{
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-.exportLabel {
-    margin-top: 10px;
-    margin-bottom: 2px;
-}
-
-.exportLabel:hover{
-    cursor: pointer;
-}
-
-
-.main .routeList *{
-    text-align: center;
-    width: 100%;
-    height: 45px;
-    background-color:rgb(0, 115, 255);
-    border: 5cm;
-    border-radius: 3px;
-    margin-top: 5px;
-    font-size: 16px;
-    color: #ffffff;
-    cursor: pointer;
-}
-
-
-
-
-.header *:hover{
-    cursor: pointer;
-}
-
-.header .profileName{
-    margin-left: auto;
-    margin-right: 10px;
-}
-
 .photosList{
     height: 100%;
     display: inline-block;
     overflow-y: auto;
 }
 
-.profile .profileName{
+/* ---------Комментарии--------- */
+.commentsList{
+    overflow-y: auto;
+    height: 90%;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+#comments{
+    height: 100%;
     
 }
-.profile .profileName:hover {
-    cursor:pointer
-}
 
-
-.routeInfo{
-    width: 500px;
-    height: 80%;
-    margin-left: 5px;
-    margin-right: 5px;
-
+.commentsList *{
+    margin-bottom: 10px;
 
 }
 
-.routeInfo * {
-    text-align: center;
+.commentField{
+    resize: none;
 }
 
-.routeInfo .routeInfoLabel{
-align-self: center;
+.commentField{
+    resize: none;
 }
+
 
 /* Style the tab */
 .tab {

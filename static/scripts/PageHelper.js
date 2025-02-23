@@ -25,6 +25,45 @@ var pageHelper = {
     }
   },
 
+
+  // Маршруты
+
+  // Получить информацию о маршруте по его id через getRoute
+  // и вывод полученных данных пользователю
+  showRouteInfo: async function(id){
+    if(id != currentRouteId)
+    {
+      route = await pageHelper.getRoute(id);
+      var points = JSON.parse(route.points);
+      photos = JSON.parse(route.photos);
+      currentRoute = route;
+      this.buildRouteOnMap(points);
+      routeNameText.innerText = "Название маршрута: " + route.name
+      routeDescriptionText.innerText = "Описание: " + route.description
+      routeRatingText.innerText = "Рейтинг: " + route.rating
+      
+      commentsList.innerText = ''
+      route.comments.forEach(comment => {
+          pageHelper.showComment(comment.creator, comment.comment)
+      })
+      
+      photosList.innerText = ''
+      // В данном случае photo - название файла фотографии на серваке.
+      i = 0;
+      photos.forEach(photo => {
+          let photoElem = document.createElement('img');
+          photoElem.src = "static/images/routes/" + photo;
+          
+          photoElem.photoId = photos.indexOf(photo);
+          i++;
+          photoElem.style.maxWidth = '300px';
+          photoElem.addEventListener('click', pageHelper.onPhotoClick);
+
+          photosList.appendChild(photoElem);
+      })
+    }
+  },  
+
   onProfileNameClick: function(){
     window.location.href = '/login'; 
   },
@@ -202,6 +241,7 @@ var pageHelper = {
 
   //-----------Комментарии-------------
 
+  // Функция, чтобы оставить комментарий к маршруту
   makeComment: async function(){
     var url = '/makeComment'
 

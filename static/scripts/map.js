@@ -53,7 +53,7 @@ async function init(){
         btn.innerText = route.name
         routeList.appendChild(btn)
     });
-    showRouteInfo(publicRoutes[0].id)
+    pageHelper.showRouteInfo(publicRoutes[0].id)
 
     /*
     var referencePoints;
@@ -89,56 +89,12 @@ async function makeComment(){
     }
 }
 
-function buildRouteOnMap(points){
-   pageHelper.buildRouteOnMap(points)
-}
 
-// Получить информацию о маршруте по его id через getRoute
-// и вывод полученных данных пользователю
-async function showRouteInfo(id){
-    if(id != currentRouteId){
-        route = await pageHelper.getRoute(id);
-        var points = JSON.parse(route.points);
-        photos = JSON.parse(route.photos);
-        currentRoute = route;
-        buildRouteOnMap(points);
-        routeNameText.innerText = "Название маршрута: " + route.name
-        routeDescriptionText.innerText = "Описание: " + route.description
-        routeRatingText.innerText = "Рейтинг: " + route.rating
-        
-        commentsList.innerText = ''
-        route.comments.forEach(comment => {
-            pageHelper.showComment(comment.creator, comment.comment)
-        })
-        
-        photosList.innerText = ''
-        // В данном случае photo - название файла фотографии на серваке.
-        i = 0;
-        photos.forEach(photo => {
-            let photoElem = document.createElement('img');
-            photoElem.src = "static/images/routes/" + photo;
-            
-            photoElem.photoId = photos.indexOf(photo);
-            i++;
-            photoElem.style.maxWidth = '300px';
-            photoElem.addEventListener('click', pageHelper.onPhotoClick);
 
-            photosList.appendChild(photoElem);
-            
-            /*
-            let photoElem2 = document.createElement('img');
-            photoElem2.src = "static/images/routes/" + photo;
-            photoElem2.style.height = '100px';
-            photoElem2.style.weight = '100px';
 
-            photosList.appendChild(photoElem2);*/
-        })
-        
-    }
-}
 
 function onRouteButtonClick(event){
-    showRouteInfo(event.currentTarget.routeId);
+    pageHelper.showRouteInfo(event.currentTarget.routeId);
 }
 
 // Получение маршрута по его id
@@ -206,15 +162,17 @@ async function importObjects(){
         fileType = file.name.split('.')[1]
 
         console.log(fileType);
-        if (fileType == 'json' | fileType == 'geoJson')
+        if (fileType == 'json' | fileType == 'geojson')
         {
-            pageHelper.geoJsonImport(pageHelper.flipJsonCoords(result));
+            flippedJson = pageHelper.flipJsonCoords(JSON.parse(result));
+            console.log(flippedJson);
+            pageHelper.geoJsonImport(flippedJson);
         };
 
         if (fileType == 'osm'){
             parser = new DOMParser();
             xmlDoc = parser.parseFromString(result,"text/xml");
-            console.log(osmtogeojson(xmlDoc));
+            pageHelper.geoJsonImport(osmtogeojson(xmlDoc));
         }
     }
     

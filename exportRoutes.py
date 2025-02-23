@@ -4,17 +4,24 @@ import gpxpy
 import gpxpy.gpx
 import simplekml 
 
-def export_gpx(points, id):
+def export_gpx(id, points, name, desc):
     #print(route)
     gpx = gpxpy.gpx.GPX()
+    gpx_route = gpxpy.gpx.GPXRoute()
+    gpx.routes.append(gpx_route)
+
     gpx_track = gpxpy.gpx.GPXTrack()
     gpx.tracks.append(gpx_track)
 
     gpx_segment = gpxpy.gpx.GPXTrackSegment()
     gpx_track.segments.append(gpx_segment)
 
+    gpx_route.name = name
+    gpx_route.description = desc
     for p in points:
-        gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(p[0], p[1], elevation=1234))
+        gpx_route.points.append(gpxpy.gpx.GPXRoutePoint(p[0], p[1]))
+        
+        #gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(p[0], p[1], elevation=1234))
     
 
     localPath = os.path.dirname(os.path.realpath(__file__))

@@ -50,7 +50,7 @@ async function init(){
         btn.innerText = route.name
         routeList.appendChild(btn)
     });
-    showRouteInfo(myRoutes[0].id)
+    pageHelper.showRouteInfo(myRoutes[0].id)
 
     /*
     var referencePoints;
@@ -60,35 +60,9 @@ async function init(){
     //saveRoute()
 }
 
-// Функция, чтобы оставить комментарий к маршруту
-async function makeComment(){
-    var url = '/makeComment'
 
-    let data = JSON.stringify({ 
-        route_id: currentRoute.id, 
-        comment: commentField.value
-    })
 
-    let response = await fetch(url, {
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-        },
-        method: 'POST',
-        body: data
-    });
-    var result = await response.text();
-    const parsedResult = JSON.parse(result);
-    if(parsedResult.error != null){
-        alert(parsedResult.error);
-    }
-    else{
-        alert(parsedResult)
-    }
-}
 
-function buildRouteOnMap(points){
-    pageHelper.buildRouteOnMap(points);
-}
 
 // Получить информацию о маршруте по его id через getRoute
 // и вывод полученных данных пользователю
@@ -99,7 +73,7 @@ async function showRouteInfo(id){
         var photos = JSON.parse(route.photos);
         var changes = JSON.parse(route.changes);
         currentRoute = route;
-        buildRouteOnMap(points);
+        pageHelper.buildRouteOnMap(points);
         routeNameText.innerText = "Название маршрута: " + route.name
         routeDescriptionText.innerText = "Описание: " + route.description
         routeRatingText.innerText = "Рейтинг: " + route.rating
@@ -128,8 +102,21 @@ async function showRouteInfo(id){
             photosList.appendChild(photoElem2);
         })
         
+         
+    }
+}
+
+
+function onRouteButtonClick(event){
+    pageHelper.showRouteInfo(event.currentTarget.routeId);
+}
+
+function onChangeElementClick(event){
+    pageHelper.buildRouteOnMap(event.currentTarget.points);
+    if (changesList!=null) {
         changesList.innerText = ''
 
+        var changes = currentRoute.changes;
         changes.forEach(change =>{
             let changeElem = document.createElement('p');
             //commentElem.routeId = route.id
@@ -138,17 +125,8 @@ async function showRouteInfo(id){
             changeElem.points = points;
             changeElem.addEventListener('click', onChangeElementClick);
             changesList.appendChild(changeElem);
-        })  
-    }
-}
-
-
-function onRouteButtonClick(event){
-    showRouteInfo(event.currentTarget.routeId);
-}
-
-function onChangeElementClick(event){
-    buildRouteOnMap(event.currentTarget.points);
+        }) 
+      }
     changesMode = true;
 }
 
@@ -206,7 +184,7 @@ async function saveRoute(route){
 // Это хуыня для вкладок(основное, комментарии, фотографии), спизженная из интернета.
 function showTabContent(evt, tabContent){
     if (changesMode){
-        buildRouteOnMap(JSON.parse(route.points));
+        pageHelper.buildRouteOnMap(JSON.parse(route.points));
         changesMode = false;
     }
     // Declare all variables
