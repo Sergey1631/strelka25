@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/myRoutes.css') }}" /> 
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=d837f1b4-7457-46b1-84b4-9f1b26718d5b&lang=ru_RU" type="text/javascript"></script>
+    <script src="/static/scripts/route.js"></script>
+    <script src="/static/scripts/pageHelper.js"></script>
+    <script src='/static/scripts/osmtogeojson.js'></script>
+    
+    <div id="mydiv" data-route='{{ route }}'></div>
+
+</head>
+
+<body>
+    <input type="file" name="importSelector" id="importSelector" style="width:0px">
+    <div class="header">
+        <p id="publicRoutesLink" class="publicRoutesLink" onclick="window.location.replace('/publicRoutes')">Публичные маршруты</p>
+        <p id="myRoutesLink" class="myRoutesLink" onclick="window.location.replace('/myRoutes')">Мои маршруты</p>
+        <p id="createRouteLink" class="createRouteLink" onclick="window.location.replace('/createRoute')">Создать маршрут</p>
+        <p id="importObjects" class="importObjects" onclick="pageHelper.importObjects()"> Импортировать объекты</p>
+        <p id="profileName" class="profileName" onclick="pageHelper.onProfileNameClick()">profile_name</p>  
+    </div>
+
+    <div id="viewPhoto">
+        <img id="opennedImage" src="/static/images/routes/kolosunin.jpg"/>
+        <button id="closeButton" onclick="pageHelper.onPhotoViewCloseClick()">X</button>
+        <p id="routePhotosLabel">Фотографии маршрута route</p>
+        <button id="nextPhotoButton" onclick="pageHelper.nextPhoto()">></button>
+        <button id="prevPhotoButton" onclick="pageHelper.prevPhoto()"><</button>
+    </div>
+
+    <p class="routeLabel">Маршрут</p>
+    
+    <div class="main">
+
+        <div class="map" id="map"></div>
+        
+        <div id= "routeInfo" class="routeInfo">
+            <p onclick="editRoute()">Редактировать маршрут</p>
+            <div class="tab">
+                <button class="tablinks" onclick="showTabContent(event, 'info')">Основное</button>
+                <button class="tablinks" onclick="showTabContent(event, 'photos')">Фото</button>
+                <button class="tablinks" onclick="showTabContent(event, 'comments')">Комментарии</button>
+                <button class="tablinks" onclick="showTabContent(event, 'changes')">Правки</button>
+            </div>
+            
+            <div id="info" class="tabcontent">
+                <p id="routeName">ROUTE_NAME</p>
+                <p id="routeDescription">ROUTE_DESCRIPTION</p>
+                <p id="routeRating">ROUTE_RATING</p>
+                <p class='exportLabel' onclick="exportRoute('gpx')">Экспорт маршрута в gpx</p>
+                <p class='exportLabel' onclick="exportRoute('kml')">Экспорт маршрута в kml</p>
+                <p class='exportLabel' onclick="exportRoute('kmz')">Экспорт маршрута в kmz</p>
+            </div>
+            <div id="comments" class="tabcontent">
+                <div class="commentsList">
+                    
+                </div>
+                <input type="text" id="commentField"/>
+                
+                <button onclick="pageHelper.makeComment()">Оставить комментарий</button>
+            </div>
+            <div id="photos" class="tabcontent">
+                <div class="photosList">
+                </div>                
+            </div>   
+            <div id="changes" class="tabcontent">
+                <div class="changesList">
+                </div>                
+            </div>          
+        </div>  
+    </div>
+
+</body>
+</html>

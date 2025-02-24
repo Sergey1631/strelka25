@@ -50,7 +50,9 @@ async function init(){
         btn.innerText = route.name
         routeList.appendChild(btn)
     });
-    pageHelper.showRouteInfo(myRoutes[0].id)
+
+    
+    //pageHelper.showRouteInfo(myRoutes[0].id)
 
     /*
     var referencePoints;

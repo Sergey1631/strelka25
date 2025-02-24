@@ -74,7 +74,7 @@ async function selectMultiplePhotos()
   // Добавляем в onchange обработку выбранного фото 
   input.onchange = async e => { 
 
-    var files = e.target.files[0]; 
+    var files = e.target.files; 
     loadPhotos(files);
     // Показываем выбранное фото в элементе для отображения аватарки
     //profilePic.src = URL.createObjectURL(loadedPhoto)
@@ -87,10 +87,12 @@ async function loadPhotos(photos){
   const data = new FormData();
   data.append('routeId', '3');
   
-  if (loadedPhoto)
-  {
-    data.append('photos', photos);
-  }
+  for (var i = 0; i < photos.length; i++) {
+    data.append('files[]', photos[i]);
+}
+
+  //data.append('files[]', photos);
+  console.log(photos);
   let response = await fetch('/uploadMultiplePhotos', {
     method: 'POST',    
     body: data
