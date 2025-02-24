@@ -25,8 +25,12 @@ def route(id):
     #print(route[0])
     routeDict = makeRouteDict(route)
     connection.close()
-    return render_template("/route/routeViewer.html", route=json.dumps(routeDict))
 
+    if 'user_id' in session:
+        if str(routeDict['creator_id']) == str(session['user_id']):
+            return render_template("/route/routeCreator.html", route=json.dumps(routeDict))
+    else:
+        return render_template("/route/routeViewer.html", route=json.dumps(routeDict))
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':

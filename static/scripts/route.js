@@ -125,7 +125,7 @@ async function saveRoute(route){
 // Это хуыня для вкладок(основное, комментарии, фотографии), спизженная из интернета.
 function showTabContent(evt, tabContent){
     if (changesMode){
-        pageHelper.buildRouteOnMap(JSON.parse(route.points));
+        pageHelper.buildRouteOnMap(JSON.parse(currentRoute.points));
         changesMode = false;
     }
     if(tabContent=='changes'){
