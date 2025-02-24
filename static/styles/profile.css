@@ -52,8 +52,12 @@ body h1{
 .profileInfo{
     width: 400px;
     display: flex;
-    
+    justify-content: center;
+    margin-bottom: auto;
+    margin-top: auto;
 }
+
+
 
 .profileInfo *{
     margin-left: 5px;
