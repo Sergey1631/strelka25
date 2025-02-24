@@ -132,13 +132,11 @@ async function importObjects(){
 
         var file = e.target.files[0]; 
         var url = URL.createObjectURL(file);
-        console.log(url)
         response = await fetch(url);
         var result = await response.text();
         
         fileType = file.name.split('.')[1]
 
-        console.log(fileType);
         if (fileType == 'json' | fileType == 'geojson')
         {
             flippedJson = pageHelper.flipJsonCoords(JSON.parse(result));
@@ -152,8 +150,10 @@ async function importObjects(){
             
             flippedXML = pageHelper.flipJsonCoords(osmtogeojson(xmlDoc));
             
-            nobs = remove_bs(flippedXML);
-            objectManager.add(nobs);
+            //nobs = remove_bs(flippedXML);
+            //console.log(f)
+            //pageHelper.geoJsonImport(flippedXML);
+            objectManager.add(flippedXML);
             //pageHelper.geoJsonImport(osmtogeojson(xmlDoc));
         }
     }
@@ -162,31 +162,7 @@ async function importObjects(){
     input.click(); 
 }
 
-function remove_bs(json){
-    bs = []
-    json.features.length
-    json.features.forEach(f =>{
-        if (f.properties.building != null){
 
-            bs.push(f);
-        }
-    }
-    );
-
-    for (let i = 0; i < json.features.length; i++) {
-        if (json.features[i].properties.building != null){
-            bs.push(f);
-        }
-    }
-
-    bs.forEach(b => {
-        i = json.features.indexOf(b);
-        console.log(i);
-        json.features.splice(i, 1);
-    });
-
-    return json;
-}
 
 // Это хуыня для вкладок(основное, комментарии, фотографии), спизженная из интернета.
 function showTabContent(evt, tabContent){
@@ -212,4 +188,26 @@ function showTabContent(evt, tabContent){
   // Show the current tab, and add an "active" class to the button that opened the tab
   document.getElementById(tabContent).style.display = "block";
   evt.currentTarget.className += " active";
+}
+
+
+//Оставлю на всякий пока что
+// Убираем лишнюю хуйню с osm
+function remove_bs(json){
+    bs = []    
+    shitlist = ['building', 'highway', 'natural', 'bus', 'entrance', 'route', 'barrier']
+    for (let i = json.features.length - 1; i > -1; i--) {
+        var f = json.features[i];
+        shitlist.forEach(s => {
+            if (f.properties[s] != null){
+                bs.push(s);
+            }
+        })
+    }
+
+    bs.forEach(b => {
+        json.features.splice(b, 1);
+    });
+
+    return json;
 }

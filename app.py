@@ -378,5 +378,38 @@ def makeRouteDict(route):
     return routeDict
 
 #------------------------------
+
+
+@app.route('/uploadMultiplePhotos', methods=['POST'])
+def uploadMultiplePhotos():
+    if request.method == 'POST':        
+
+        routeId = request.form['routeId']  
+        connection = sqlite3.connect('database.db')
+        cursor = connection.cursor()
+        #cursor.execute('UPDATE users SET username = ? WHERE id = ?', (newUsername, session['user_id']))
+        
+        # Если пользователь изменил фотографию, то сохраняем её в хранилище и записываем её имя в БД
+        for photo in request.files:
+            
+
+            # Генерируем имя для фотографии
+            filename = id_generator() + '.jpg' 
+
+            # Сохраняем фото по пути app.config['profilePicsPath']
+            photo.save(app.config['profilePicsPath'] + os.path.join(filename))  
+
+            # Открываем изображение и изменяем его размер на 164x164
+            img = Image.open(app.config['profilePicsPath'] + filename) 
+            img = img.resize((164, 164))
+            img.save(app.config['profilePicsPath'] + os.path.join(filename), format='JPEG')
+
+            #cursor.execute('UPDATE users SET picname = ? WHERE id = ?', (filename, session['user_id']))
+
+        connection.commit()
+        connection.close() 
+        return 'ok'
+
+
                 
 app.run("0.0.0.0", debug=True)

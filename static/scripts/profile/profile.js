@@ -63,3 +63,36 @@ async function myRoutes()
 function redirectToLogin(){
   window.location.href = '/login';
 }
+
+async function selectMultiplePhotos()
+{
+  // Получаем ссылку на элемент загрузки фото (<input type="file">) из html
+  var input = document.getElementById('photoSelector');
+  input.type = 'file';
+  
+  // onchange - event вызываемый, если в input будет загружен какой либо файл
+  // Добавляем в onchange обработку выбранного фото 
+  input.onchange = async e => { 
+
+    var files = e.target.files[0]; 
+    loadPhotos(files);
+    // Показываем выбранное фото в элементе для отображения аватарки
+    //profilePic.src = URL.createObjectURL(loadedPhoto)
+  }
+
+  input.click(); 
+}
+// Функция для сохранения изменённых данных о пользователе
+async function loadPhotos(photos){
+  const data = new FormData();
+  data.append('routeId', '3');
+  
+  if (loadedPhoto)
+  {
+    data.append('photos', photos);
+  }
+  let response = await fetch('/uploadMultiplePhotos', {
+    method: 'POST',    
+    body: data
+  })
+}

@@ -14,6 +14,7 @@ var pageHelper = {
     }
   },
 
+  // Функция для вывода имени пользователя в правом верхнем углу
   initProfileName: async function(text){
     profileNameText = document.getElementById('profileName');
 
@@ -24,7 +25,6 @@ var pageHelper = {
         profileNameText.innerText = localUser.username
     }
   },
-
 
   // Маршруты
 
@@ -64,15 +64,18 @@ var pageHelper = {
     }
   },  
 
+  // Нажатие по имени профиля
   onProfileNameClick: function(){
     window.location.href = '/login'; 
   },
 
+  // Нажатие на кнопку закрытия просмотра изображения
   onPhotoViewCloseClick: function(){
     document.getElementById('viewPhoto').style.display = 'none';
   },
-
   
+
+  // Нажатие на фотографию
   onPhotoClick: function(event){
     pageHelper.openPhotoById(event.currentTarget.photoId);
     document.getElementById('routePhotosLabel').innerText = 'Фотографии к маршруту ' + currentRoute.name;
@@ -81,6 +84,8 @@ var pageHelper = {
     currentPhotoId = event.currentTarget.photoId;*/
     document.getElementById('viewPhoto').style.display = 'block';
   },
+
+  // Открыть окно просмотра фотографии по его индексу из массива photos
   openPhotoById: function(id) {
     if (id > -1 & id < photos.length) {
       document.getElementById('opennedImage').src = '/static/images/routes/' + photos[id];
@@ -89,14 +94,18 @@ var pageHelper = {
     }
   },
 
+  // Следующая фотка 
   nextPhoto: function(){
     this.openPhotoById(currentPhotoId + 1);
   },
 
+  // Предыдущее фото
   prevPhoto: function(){
     this.openPhotoById(currentPhotoId - 1);
   },
 
+  // Получение маршрута по его id 
+  // Возвращается json с данными о маршруте
   getRoute: async function(id){
     var url = '/getRoute'
 
@@ -114,6 +123,11 @@ var pageHelper = {
     return parsedResult
   },
 
+  // Экспорт маршрута 
+  // На входе тип файла, который будет экспортирован
+  // В запросе на входе айдишник маршрута, точки(вообще все точки, 
+  // массив точек выстроенный яндексом для построения маршрута, расстояние 
+  // между ними дай бог метр), ну и тип экспорта
   exportRoute: async function(type){
     var url = '/export'
 
@@ -136,16 +150,6 @@ var pageHelper = {
     pageHelper.downloadURI(exporturi, type + '_export')
   },
 
-  initProfileName: async function(text){
-    profileNameText = document.getElementById('profileName');
-
-    if (localUser.error=='fail') {
-        profileNameText.innerText = 'Войти'
-    }
-    else{
-        profileNameText.innerText = localUser.username
-    }
-  },
 
   onProfileNameClick: function(){
     if (localUser){
@@ -173,27 +177,7 @@ var pageHelper = {
     return parsedResult
   },
 
-  exportRoute: async function(type){
-    var url = '/export'
-
-    let data = JSON.stringify({ 
-        id: currentRoute.id,
-        points: pathCoords, 
-        export_type: type
-    })
-
-    let response = await fetch(url, {
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-        },
-        method: 'POST',
-        body: data
-    });
-    var result = await response.text();
-
-    exporturi = '/static/exports/' + type + "/" + result;
-    pageHelper.downloadURI(exporturi, type + '_export')
-  },
+  
 
   // Запрос на получение локального пользователя из flask
   // (так я называю пользователя вошедшего в свой аккаунт)
@@ -209,6 +193,8 @@ var pageHelper = {
     const parsedResult = JSON.parse(result)
     return parsedResult
   },
+
+  // Формирование ссылки для скачивания файла экспортируемого маршрута
   downloadURI: function(uri, name) {
     var link = document.createElement("a");
     link.download = name;
@@ -218,6 +204,8 @@ var pageHelper = {
     document.body.removeChild(link);
     delete link;
   },
+
+  // Построение маршрута на карте
   buildRouteOnMap: function(points){
     myMap.geoObjects.remove(mapRoute);
     var multiRoute = new ymaps.multiRouter.MultiRoute({   
@@ -306,18 +294,60 @@ var pageHelper = {
   
   
   
-  //JSON
+  //Импорт объектов 
+  importObjects: function(){
+    var input = document.getElementById('importSelector');
+    input.type = 'file';
+
+    // onchange - event вызываемый, если в input будет загружен какой либо файл
+    // Добавляем в onchange обработку выбранного фото 
+    input.onchange = async e => { 
+
+        var file = e.target.files[0]; 
+        var url = URL.createObjectURL(file);
+        response = await fetch(url);
+        var result = await response.text();
+        
+        fileType = file.name.split('.')[1]
+
+        if (fileType == 'json' | fileType == 'geojson')
+        {
+            flippedJson = pageHelper.flipJsonCoords(JSON.parse(result));
+            console.log(flippedJson);
+            pageHelper.geoJsonImport(flippedJson);
+        };
+
+        if (fileType == 'osm'){
+            parser = new DOMParser();
+            xmlDoc = parser.parseFromString(result,"text/xml");
+            
+            flippedXML = pageHelper.flipJsonCoords(osmtogeojson(xmlDoc));
+            
+            //nobs = remove_bs(flippedXML);
+            //console.log(f)
+            //pageHelper.geoJsonImport(flippedXML);
+            objectManager.add(flippedXML);
+            //pageHelper.geoJsonImport(osmtogeojson(xmlDoc));
+        }
+    }
+    
+
+    input.click(); 
+  },
   
   geoJsonImport: function(json){
     json.features.forEach(f => 
     {
       var name = ''
+      var nameFields = ['location', 'iconCaption']
+      
       if (f.properties.location) {
         name = f.properties.location.name
       }
       else if (f.properties.iconCaption){
         name = f.properties.iconCaption
       }
+      else if (f.prop)
       var myGeoObject = new ymaps.GeoObject({
         geometry: {
           type: f.geometry.type, // тип геометрии - точка
