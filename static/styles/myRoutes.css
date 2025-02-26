@@ -122,13 +122,14 @@ align-self: center;
 }
 
 .photosList{
-    text-align: center;
+    align-items: center;
     height: 100%;
     display: inline-block;
     overflow-y: auto;
 }
 
 .photosList *{
+    text-align: center;
     margin: 5px;
 }
 

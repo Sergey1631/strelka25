@@ -31,18 +31,19 @@ def export_gpx(id, points, name, desc):
         f.write(gpx.to_xml())
     return fileName
 
-def export_kml(points, id):
-    return simplekml_export(points, id, 'kml')
+def export_kml(id, points, name, desc):
+    return simplekml_export(points, id, 'kml', name, desc)
 
-def export_kmz(points, id):
-    return simplekml_export(points, id, 'kmz')
+def export_kmz(id, points, name, desc):
+    return simplekml_export(points, id, 'kmz', name, desc)
     
     
 
-def simplekml_export(points, id, type):
+def simplekml_export(points, id, type, name, desc):
     kml = simplekml.Kml()
     ls = kml.newlinestring(name='Маршрут') 
-
+    kml.document.name = name
+    kml.document.description = desc
     for p in points:
         coord = [p[1], p[0], 10.0]
         ls.coords.addcoordinates([coord])

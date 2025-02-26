@@ -1,3 +1,4 @@
+import datetime
 import os
 import random
 import sqlite3
@@ -29,8 +30,39 @@ def route(id):
     if 'user_id' in session:
         if str(routeDict['creator_id']) == str(session['user_id']):
             return render_template("/route/routeCreator.html", route=json.dumps(routeDict))
+        else:
+            if routeDict['public'] == 1:
+                return render_template("/route/routeViewer.html", route=json.dumps(routeDict))
+            else: 
+                return render_template("/route/privateRoute.html")
+        
+
+@app.route('/editRoute/<id>')
+def editRoute(id):
+    connection = sqlite3.connect('database.db')
+
+    cursor = connection.cursor()
+    
+    cursor.execute('SELECT * FROM routes WHERE id = ?', [id])
+    
+    route = cursor.fetchone()
+    #print(route[0])
+    routeDict = makeRouteDict(route)
+    connection.close()
+
+
+    if 'user_id' in session:
+        if str(routeDict['creator_id']) == str(session['user_id']):
+            return render_template("/route/editRoute.html", route=json.dumps(routeDict))
+        else:
+            if routeDict['public'] == 1:
+                return render_template("/route/routeViewer.html", route=json.dumps(routeDict))
+            else: 
+                return render_template("/route/privateRoute.html")
     else:
-        return render_template("/route/routeViewer.html", route=json.dumps(routeDict))
+        return render_template("/route/privateRoute.html")
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -225,14 +257,16 @@ def export():
         route_id = jsonData['id']
         export_type = jsonData['export_type']
         points = jsonData['points']
+        name = jsonData['name']
+        desc = jsonData['desc']
 
         #print(points)
         if export_type == 'gpx':
-            return exportRoutes.export_gpx(points, route_id)
+            return exportRoutes.export_gpx(route_id, points, name, desc)
         if export_type == 'kmz':
-            return exportRoutes.export_kmz(points, route_id)
+            return exportRoutes.export_kmz(route_id, points, name, desc)
         if export_type == 'kml':
-            return exportRoutes.export_kml(points, route_id)
+            return exportRoutes.export_kml(route_id, points, name, desc)
 
 # Получаем комментарии к маршруту по его id и возвращаем массив словарей
 def getCommentsForRoute(id):
@@ -355,6 +389,43 @@ def getRouteChanges(id):
     connection.close()
     return json.dumps([dict(c) for c in changes])
         
+@app.route('/saveRouteChanges', methods=['POST'])
+def saveRouteChanges():
+    if request.method == 'POST':        
+
+        newName = request.form['name']  
+        newDesc = request.form['desc']
+        id = request.form['id']
+        photos = request.form['photos']
+        points = request.form['points']
+        connection = sqlite3.connect('database.db')
+        cursor = connection.cursor()
+        params = (newName, newDesc, photos, points, id)
+        cursor.execute('UPDATE routes SET name = ?, description = ?, photos = ?, points = ? WHERE id = ?', params)
+        
+        date = datetime.datetime.now()
+        changeParams = (id, points, date)
+        cursor.execute('INSERT INTO changes (route_id, points, date) VALUES (?, ?, ?)', changeParams)
+        # Если пользователь изменил фотографию, то сохраняем её в хранилище и записываем её имя в БД
+        if 'photo' in request.files:
+            photo = request.files['photo']
+
+            # Генерируем имя для фотографии
+            filename = id_generator() + '.jpg' 
+
+            # Сохраняем фото по пути app.config['profilePicsPath']
+            photo.save(app.config['profilePicsPath'] + os.path.join(filename))  
+
+            # Открываем изображение и изменяем его размер на 164x164
+            img = Image.open(app.config['profilePicsPath'] + filename) 
+            img = img.resize((164, 164))
+            img.save(app.config['profilePicsPath'] + os.path.join(filename), format='JPEG')
+
+            cursor.execute('UPDATE users SET picname = ? WHERE id = ?', (filename, session['user_id']))
+
+        connection.commit()
+        connection.close() 
+        return 'ok'
 
 
 #----Вспомогательные функции----
@@ -422,11 +493,10 @@ def makeRouteDict(route):
         'name': route[2],
         'points': route[3],
         'public': route[4],
-        'rating': route[5],
         'comments': comments,
         'changes': changes,
-        'description': route[7],
-        'photos': route[8]
+        'description': route[6],
+        'photos': route[7]
     }
     return routeDict
 

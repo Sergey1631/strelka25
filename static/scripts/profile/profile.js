@@ -89,7 +89,7 @@ async function loadPhotos(photos){
   
   for (var i = 0; i < photos.length; i++) {
     data.append('files[]', photos[i]);
-}
+  }
 
   //data.append('files[]', photos);
   console.log(photos);

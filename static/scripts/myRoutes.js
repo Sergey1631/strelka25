@@ -52,7 +52,7 @@ async function init(){
     });
 
     
-    //pageHelper.showRouteInfo(myRoutes[0].id)
+    pageHelper.showRouteInfo(myRoutes[0]);
 
     /*
     var referencePoints;
@@ -63,7 +63,7 @@ async function init(){
 }
 
 function onRouteButtonClick(event){
-    pageHelper.showRouteInfo(event.currentTarget.routeId);
+    pageHelper.showRouteInfoById(event.currentTarget.routeId);
 }
 
 function showRouteChanges(){

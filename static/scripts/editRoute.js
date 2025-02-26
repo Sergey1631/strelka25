@@ -1,8 +1,8 @@
 var myMap; // Переменная для хранения созданной карты 
 
 // ----Элементы из html----
-var routeNameText; // Ссылка на элемент текста названия маршрута,...
-var routeDescriptionText; //... описания маршрута
+var routeNameInput; // Ссылка на элемент текста названия маршрута,...
+var routeDescriptionInput; //... описания маршрута
 var routeRatingText; //... рейтинга маршрута
 var profileNameText; // элемент текста имени пользователя
 var commentField; // элемент поля ввода комментария
@@ -16,18 +16,19 @@ var publicRoutes; // переменная для хранения всех пу�
 
 var localUser; // переменная для хранения вошедшего пользователя
 
+var currentPhotoId;
+var photos = [];
+
 var currentRoute;
 var currentRouteId = -1;
 var mapRoute;
 ymaps.ready(init);
 
 async function init(){
-    routeNameText = document.getElementById("routeName");
-    routeDescriptionText = document.getElementById("routeDescription");
-    routeRatingText = document.getElementById("routeRating");
+    routeNameInput = document.getElementById("routeNameInput");
+    routeDescriptionInput = document.getElementById("routeDescInput");
     profileNameText = document.getElementById('profileName');
     commentField = document.getElementById('commentField');
-    routeList = document.getElementsByClassName('routeList')[0];
     commentsList = document.getElementsByClassName('commentsList')[0];
     photosList = document.getElementsByClassName('photosList')[0];
     changesList = document.getElementsByClassName('changesList')[0];
@@ -42,11 +43,26 @@ async function init(){
         zoom: 7
     });
 
-    
     //pageHelper.showRouteInfo(myRoutes[0].id)
     currentRoute = JSON.parse(document.getElementById("mydiv").dataset.route);
+
     routeLabelText.innerText = 'Маршрут ' + currentRoute.name;
-    pageHelper.showRouteInfo(currentRoute);
+    
+    routeNameInput.value = currentRoute.name;
+    routeDescriptionInput.value = currentRoute.description;
+    //photos = JSON.parse(currentRoute.photos);
+
+    var remotePhotos = JSON.parse(currentRoute.photos);
+    remotePhotos.forEach(p => {photos.push(pageHelper.createPhoto(p, false))})
+    console.log(photos)
+    pageHelper.buildRouteOnMap(JSON.parse(currentRoute.points));
+    
+    pageHelper.showPhotos(photos);
+    pageHelper.showComments(currentRoute.comments);
+    mapRoute.editor.start({
+        addWayPoints: true,
+        removeWayPoints: true
+    });    //pageHelper.showRouteInfo(currentRoute);
     /*
     var referencePoints;
     referencePoints = ['kolosunin.jpg', 'test.jpg']
@@ -59,30 +75,71 @@ function onRouteButtonClick(event){
     pageHelper.showRouteInfoById(event.currentTarget.routeId);
 }
 
-function showRouteChanges(){
-    if (changesList!=null) {
-        changesList.innerText = ''
-        console.log(currentRoute)
-        var changes = JSON.parse(currentRoute.changes);
-        console.log(changes);
-        changes.forEach(change =>{
-            let changeElem = document.createElement('p');
-            console.log(change.points);
-            points = JSON.parse(change.points);
-            //commentElem.routeId = route.id
-            //commentElem.addEventListener('click', onRouteButtonClick)
-            changeElem.innerText = 'Правка от ' + change.date;
-            changeElem.points = points;
-            changeElem.addEventListener('click', onChangeElementClick);
-            changesList.appendChild(changeElem);
-        }) 
+function deletePhoto(){
+    photos.splice(currentPhotoId, 1);
+    photoElems = document.getElementsByClassName("ph");
+    pageHelper.showPhotos(photos);
+    if (currentPhotoId == photos.length - 1){
+        pageHelper.openPhotoById(currentPhotoId - 1);}
+    else if (currentPhotoId == 0 & photos.length > 1){
+        pageHelper.openPhotoById(currentPhotoId + 1);}
+    else {
+        pageHelper.openPhotoById(currentPhotoId - 1);
     }
+    
+    console.log(currentRouteId);
+    console.log(photos);
+}
+
+async function selectMultiplePhotos()
+{
+  // Получаем ссылку на элемент загрузки фото (<input type="file">) из html
+  var input = document.getElementById('photoSelector');
+  input.type = 'file';
+  
+  // onchange - event вызываемый, если в input будет загружен какой либо файл
+  // Добавляем в onchange обработку выбранного фото 
+  input.onchange = async e => { 
+
+    var files = e.target.files; 
+    console.log(files)
+    for(let i = 0; i < files.length; i++){
+        photos.push(pageHelper.createPhoto(URL.createObjectURL(files.item(i)), true))
+        pageHelper.showPhotos(photos);
+    }
+    
+    
+    //loadPhotos(files);
+    // Показываем выбранное фото в элементе для отображения аватарки
+    //profilePic.src = URL.createObjectURL(loadedPhoto)
+  }
+
+  input.click(); 
+}
+
+async function saveRouteChanges(){
+    const data = new FormData();
+    data.append('name', routeNameInput.value);
+    data.append('desc', routeDescriptionInput.value);
+    data.append('id', currentRoute.id);
+    //data.append('points', map.)
+    console.log(JSON.stringify(photos));
+    data.append('photos', JSON.stringify(photos))
+    data.append('points', JSON.stringify(mapRoute.model.getReferencePoints()))
+    // Если пользователь загрузил новое фото, то записываем в тело запроса ещё и фото
+    
+    /*if (loadedPhoto)
+    {
+        data.append('loadedPhotos', loadedPhotos);
+    }*/
+    let response = await fetch('/saveRouteChanges', {
+        method: 'POST',    
+        body: data
+    })
 }
 
 function onChangeElementClick(event){
-    pageHelper.buildRouteOnMap(event.currentTarget.points);
-    console.log('loadchange')
-    
+    pageHelper.buildRouteOnMap(event.currentTarget.points);    
     changesMode = true;
 }
 

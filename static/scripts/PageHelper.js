@@ -45,29 +45,51 @@ var pageHelper = {
     this.buildRouteOnMap(points);
     routeNameText.innerText = "Название маршрута: " + route.name
     routeDescriptionText.innerText = "Описание: " + route.description
-    routeRatingText.innerText = "Рейтинг: " + route.rating
     
+    this.showComments(route.comments);
+    this.showPhotos(photos);
+  },  
+
+  showComments: function(comments){
     commentsList.innerText = ''
-    route.comments.forEach(comment => {
+    comments.forEach(comment => {
         pageHelper.showComment(comment.creator, comment.comment)
     })
-    
+  },
+
+  createPhoto: function(name, isLocal){
+    let photo = new Object();
+    photo.isLocal = isLocal;
+    photo.name = name;
+    console.log(photo);
+    return photo;
+  },
+
+  showPhotos: function(photos){
     photosList.innerText = ''
     // В данном случае photo - название файла фотографии на серваке.
     i = 0;
     photos.forEach(photo => {
+        let div = document.createElement('div');
+        div.className = 'ph';
         let photoElem = document.createElement('img');
-        photoElem.src = "/static/images/routes/" + photo;
+        if(photo.isLocal){
+          photoElem.src = photo.name;
+        }
+        else{
+          photoElem.src = "/static/images/routes/" + photo.name;
+        }
+        
         
         photoElem.photoId = photos.indexOf(photo);
         i++;
         photoElem.style.maxWidth = '300px';
         photoElem.addEventListener('click', pageHelper.onPhotoClick);
 
-        photosList.appendChild(photoElem);
+        div.appendChild(photoElem);
+        photosList.appendChild(div);
     })
-  },  
-
+  },
   // Нажатие по имени профиля
   onProfileNameClick: function(){
     window.location.href = '/login'; 
@@ -92,7 +114,13 @@ var pageHelper = {
   // Открыть окно просмотра фотографии по его индексу из массива photos
   openPhotoById: function(id) {
     if (id > -1 & id < photos.length) {
-      document.getElementById('opennedImage').src = '/static/images/routes/' + photos[id];
+      if (!photos[id].isLocal){
+
+        document.getElementById('opennedImage').src = '/static/images/routes/' + photos[id].name;
+      }
+      else{
+        document.getElementById('opennedImage').src = photos[id].name;
+      }
       currentPhotoId = id;
       console.log(id);
     }
@@ -138,6 +166,8 @@ var pageHelper = {
     let data = JSON.stringify({ 
         id: currentRoute.id,
         points: pathCoords, 
+        name: currentRoute.name,
+        desc: currentRoute.description,
         export_type: type
     })
 
@@ -212,16 +242,15 @@ var pageHelper = {
   // Построение маршрута на карте
   buildRouteOnMap: function(points){
     myMap.geoObjects.remove(mapRoute);
-    var multiRoute = new ymaps.multiRouter.MultiRoute({   
+    mapRoute = new ymaps.multiRouter.MultiRoute({   
         referencePoints: points
     }, {
-        wayPointVisible: false,
+        wayPointVisible: true,
         boundsAutoApply: true
     });
-    myMap.geoObjects.add(multiRoute);
-    mapRoute = multiRoute;
-    multiRoute.model.events.add('requestsuccess', function() {
-        var activeRoute = multiRoute.getActiveRoute();
+    myMap.geoObjects.add(mapRoute);
+    mapRoute.model.events.add('requestsuccess', function() {
+        var activeRoute = mapRoute.getActiveRoute();
         var activeRoutePaths = activeRoute.getPaths(); 
         activeRoutePaths.each(function(path) {
             pathCoords = path.properties.get('coordinates');
