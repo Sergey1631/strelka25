@@ -206,6 +206,7 @@ align-self: center;
     place-content: center;
     z-index: 999;
     max-width: 70%;
+    max-height: 70%;
 }
 
 .changesList{

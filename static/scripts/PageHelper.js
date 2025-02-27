@@ -84,6 +84,7 @@ var pageHelper = {
         photoElem.photoId = photos.indexOf(photo);
         i++;
         photoElem.style.maxWidth = '300px';
+        photoElem.style.maxHeight = '700px';
         photoElem.addEventListener('click', pageHelper.onPhotoClick);
 
         div.appendChild(photoElem);

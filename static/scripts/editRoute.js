@@ -12,6 +12,8 @@ var changesList;
 var changesMode;
 var pathCoords;
 
+var loadedPhotos = [];
+
 var publicRoutes; // переменная для хранения всех публичных маршрутов
 
 var localUser; // переменная для хранения вошедшего пользователя
@@ -102,10 +104,10 @@ async function selectMultiplePhotos()
   input.onchange = async e => { 
 
     var files = e.target.files; 
-    console.log(files)
     for(let i = 0; i < files.length; i++){
         photos.push(pageHelper.createPhoto(URL.createObjectURL(files.item(i)), true))
         pageHelper.showPhotos(photos);
+        loadedPhotos = files;
     }
     
     
@@ -124,7 +126,15 @@ async function saveRouteChanges(){
     data.append('id', currentRoute.id);
     //data.append('points', map.)
     console.log(JSON.stringify(photos));
-    data.append('photos', JSON.stringify(photos))
+    photosNames = []
+    photos.forEach(p => {
+        photosNames.push(p.name)
+    })
+    data.append('photos', JSON.stringify(photosNames));
+
+    for (var i = 0; i < loadedPhotos.length; i++) {
+        data.append('files[]', loadedPhotos[i]);
+    }
     data.append('points', JSON.stringify(mapRoute.model.getReferencePoints()))
     // Если пользователь загрузил новое фото, то записываем в тело запроса ещё и фото
     

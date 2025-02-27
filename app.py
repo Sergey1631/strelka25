@@ -23,8 +23,7 @@ def route(id):
     cursor.execute('SELECT * FROM routes WHERE id = ?', [id])
     
     route = cursor.fetchone()
-    #print(route[0])
-    routeDict = makeRouteDict(route)
+    routeDict = makeRouteDict(route) #серега сосет хуй
     connection.close()
 
     if 'user_id' in session:
@@ -46,7 +45,7 @@ def editRoute(id):
     cursor.execute('SELECT * FROM routes WHERE id = ?', [id])
     
     route = cursor.fetchone()
-    #print(route[0])
+
     routeDict = makeRouteDict(route)
     connection.close()
 
@@ -76,7 +75,7 @@ def login():
         cursor = connection.cursor()
         user = (email, password)
         
-        #Запрос на проверку существования пользователя в БД с указанной почтой и паролем
+        #Запрос на проверку существования пользователя в Будке Друга с указанной почтой и паролем
         #Если пользователь существует - вернётся 1
         cursor.execute('SELECT EXISTS(SELECT 1 FROM users WHERE email=? AND password=?)', user)
         isUserExists = cursor.fetchone() == (1,)
@@ -149,12 +148,12 @@ def signUp():
 @app.route('/logout', methods=['GET', 'POST'])
 def logOut():
     session.pop('user_id', None)
-    response = redirect("/publicRoutes") # Адрес для переадресации
+    response = redirect("/publicRoutes") # Адрес для перемухтоловизации
     #response.set_cookie('user_id', id)
     return response 
 
 #-----Страница профиля-----
-#Проверяется, вошёл ли пользователь в аккаунт. Если не вошёл, то выводится страница с предложением войти в аккаунт
+#Проверяется, вошёл ли пользователь в аккаунт. Если не вошёл, то все нахуй, выводится страница с предложением войти в аккаунт
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     if 'user_id' in session:
@@ -172,7 +171,7 @@ def editProfile():
         return render_template("/notLoggedIn.html")      
 
 # route для сохранения изменённых данных о пользователя
-# Обычно при передаче данных из браузера использовался json
+# Обычно при передаче данных из браузера использовался джейсон
 # Но здесь используется form т.к. в json нельзя передавать файлы(в нашем случае аватарку пользователя) 
 @app.route('/profile/saveProfileChanges', methods=['POST'])
 def saveProfileChanges():
@@ -187,7 +186,7 @@ def saveProfileChanges():
         if 'photo' in request.files:
             photo = request.files['photo']
 
-            # Генерируем имя для фотографии
+            # Генерируем Фамилию для фотографии
             filename = id_generator() + '.jpg' 
 
             # Сохраняем фото по пути app.config['profilePicsPath']
@@ -226,7 +225,7 @@ def uploadMultiplePhotos():
             # Сохраняем фото по пути app.config['profilePicsPath']
             photo.save(app.config['profilePicsPath'] + os.path.join(filename))  
 
-            # Открываем изображение и изменяем его размер на 164x164
+            # Открываем изображение и нахуй изменяем его размер на 164x164
             #img = Image.open(app.config['profilePicsPath'] + filename) 
             #img = img.resize((164, 164))
             #img.save(app.config['profilePicsPath'] + os.path.join(filename), format='JPEG')
@@ -268,7 +267,7 @@ def export():
         if export_type == 'kml':
             return exportRoutes.export_kml(route_id, points, name, desc)
 
-# Получаем комментарии к маршруту по его id и возвращаем массив словарей
+# Получаем комментарии к маршруту по его id и возвращаем ебучий массив словарей
 def getCommentsForRoute(id):
     connection = sqlite3.connect('database.db')
 
@@ -311,7 +310,7 @@ def makeComment():
     else:
         return makeError("Вы не авторизованы")
     
-#-----Дальше идёт функционал маршрутов, он не доделан-----
+#-----Дальше идёт функционал маршрутов, он не доделан так как женя хуйло и мне не скинул нихуя-----
 @app.route('/saveRoute/', methods=['GET', 'POST'])
 def saveRoute():
     if request.method == 'POST':
@@ -326,7 +325,7 @@ def saveRoute():
         connection.close()
         return 'ok'
 
-# Получаем все публичные маршруты
+# Получаем все шлюшие маршруты
 @app.route('/getPublicRoutes/', methods=['GET'])
 def getPublicRoutes():
     connection = sqlite3.connect('database.db')
@@ -359,7 +358,7 @@ def getMyRoutes():
     connection.close()
     return routesArr
 
-# Получаем маршрут и информацию о нём из БД по его id
+# Получаем маршрут и информацию о нём из БД по его иди
 @app.route('/getRoute/', methods=['GET', 'POST'])
 def getRoute():
     if request.method == 'POST':
@@ -429,7 +428,7 @@ def saveRouteChanges():
 
 
 #----Вспомогательные функции----
-# Функция для возврата ошибки в json формате
+# Функция для возврата денег в json формате
 def makeError(errorString):
     data = { 
         "error" : errorString
@@ -480,7 +479,7 @@ def getUserInfoById(id):
 
 # Формируем словарь и возвращаем его в формате json
 # Чтобы было удобнее работать с данными в JS
-# И обращаться непосредственно к аттрибуту, а не по индексу
+# И обращаться непосредственно к илье, а не по индексу
 # Например, route.description, вместо route[7]
 
 # Создание словаря по переданному route из БД 
@@ -501,9 +500,5 @@ def makeRouteDict(route):
     return routeDict
 
 #------------------------------
-
-
-
-
                 
 app.run("0.0.0.0", debug=True)
