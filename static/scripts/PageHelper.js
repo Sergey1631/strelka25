@@ -66,6 +66,7 @@ var pageHelper = {
   },
 
   showPhotos: function(photos){
+    console.log(photos)
     photosList.innerText = ''
     // В данном случае photo - название файла фотографии на серваке.
     i = 0;
@@ -79,7 +80,6 @@ var pageHelper = {
         else{
           photoElem.src = "/static/images/routes/" + photo.name;
         }
-        
         
         photoElem.photoId = photos.indexOf(photo);
         i++;

@@ -399,28 +399,26 @@ def saveRouteChanges():
         points = request.form['points']
         connection = sqlite3.connect('database.db')
         cursor = connection.cursor()
-        params = (newName, newDesc, photos, points, id)
-        cursor.execute('UPDATE routes SET name = ?, description = ?, photos = ?, points = ? WHERE id = ?', params)
         
         date = datetime.datetime.now()
         changeParams = (id, points, date)
+        print(photos)
         cursor.execute('INSERT INTO changes (route_id, points, date) VALUES (?, ?, ?)', changeParams)
-        # Если пользователь изменил фотографию, то сохраняем её в хранилище и записываем её имя в БД
-        if 'photo' in request.files:
-            photo = request.files['photo']
-
+        photosArr = json.loads(photos)
+        for photo in request.files.getlist("files[]"):
+            
             # Генерируем имя для фотографии
             filename = id_generator() + '.jpg' 
-
+            
+            photosArr.append(filename)
+            print(photosArr)
+            photos = json.dumps(photosArr)
             # Сохраняем фото по пути app.config['profilePicsPath']
-            photo.save(app.config['profilePicsPath'] + os.path.join(filename))  
+            photo.save(app.config['routePhotosPath'] + os.path.join(filename))
 
-            # Открываем изображение и изменяем его размер на 164x164
-            img = Image.open(app.config['profilePicsPath'] + filename) 
-            img = img.resize((164, 164))
-            img.save(app.config['profilePicsPath'] + os.path.join(filename), format='JPEG')
-
-            cursor.execute('UPDATE users SET picname = ? WHERE id = ?', (filename, session['user_id']))
+        
+        params = (newName, newDesc, photos, points, id)
+        cursor.execute('UPDATE routes SET name = ?, description = ?, photos = ?, points = ? WHERE id = ?', params)
 
         connection.commit()
         connection.close() 

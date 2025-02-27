@@ -124,12 +124,14 @@ async function saveRouteChanges(){
     data.append('name', routeNameInput.value);
     data.append('desc', routeDescriptionInput.value);
     data.append('id', currentRoute.id);
-    //data.append('points', map.)
-    console.log(JSON.stringify(photos));
+    console.log(photos);
     photosNames = []
     photos.forEach(p => {
-        photosNames.push(p.name)
-    })
+        if(!p.isLocal)
+        {
+            photosNames.push(p.name);
+        }
+    });
     data.append('photos', JSON.stringify(photosNames));
 
     for (var i = 0; i < loadedPhotos.length; i++) {
