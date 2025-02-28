@@ -40,7 +40,8 @@ var pageHelper = {
   
   showRouteInfo: async function(route){
     var points = JSON.parse(route.points);
-    photos = JSON.parse(route.photos);
+    var remotePhotos = JSON.parse(route.photos);
+    remotePhotos.forEach(p => {photos.push(pageHelper.createPhoto(p, false))})
     currentRoute = route;
     this.buildRouteOnMap(points);
     routeNameText.innerText = "Название маршрута: " + route.name
@@ -370,6 +371,7 @@ var pageHelper = {
   },
   
   geoJsonImport: function(json){
+    console.log(json);
     json.features.forEach(f => 
     {
       var name = ''
@@ -382,7 +384,8 @@ var pageHelper = {
         name = f.properties.iconCaption
       }
       else if (f.prop)
-      var myGeoObject = new ymaps.GeoObject({
+      var myGeoObject = new Object();
+      myGeoObject = new ymaps.GeoObject({
         geometry: {
           type: f.geometry.type, // тип геометрии - точка
           coordinates: f.geometry.coordinates // координаты точки
@@ -398,7 +401,8 @@ var pageHelper = {
           fillColor: f.properties.fill,
           fillOpacity: f.properties['fill-opacity']
         });
-      
+      //myGeoObject = new ymaps.GeoObject();
+      console.log(myGeoObject);
       myMap.geoObjects.add(myGeoObject);
       
     });

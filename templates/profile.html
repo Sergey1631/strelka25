@@ -13,6 +13,7 @@
     <script src="/static/scripts/pageHelper.js"></script>
    
     <div class="header">
+        <img id="logo" src=/static/images/logo.png>
         <p id="publicRoutesLink" class="publicRoutesLink" onclick="window.location.replace('/publicRoutes')">Публичные маршруты</p>
         <p id="myRoutesLink" class="myRoutesLink" onclick="window.location.replace('/myRoutes')">Мои маршруты</p>
         <p id="createRouteLink" class="createRouteLink" onclick="window.location.replace('/createRoute')">Создать маршрут</p>
@@ -27,7 +28,6 @@
             <button class="editProfileButton" onclick="editProfile()"> Редактировать профиль </button>
             <button class="myRoutesButton" onclick="myRoutes()"> Мои маршруты </button>
             <button class="logOutButton" onclick="logOut()"> Выйти из аккаунта </button>
-            <button class="loadMultiplePhotos" onclick="selectMultiplePhotos()" > Выбрать фотографии </button>
         </div>
         <input type="file" name="photoSelector" id="photoSelector" style="width:0px" multiple>
 

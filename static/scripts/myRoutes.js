@@ -12,6 +12,8 @@ var changesList;
 var changesMode;
 var pathCoords;
 
+var photos = [];
+
 var publicRoutes; // переменная для хранения всех публичных маршрутов
 
 var localUser; // переменная для хранения вошедшего пользователя

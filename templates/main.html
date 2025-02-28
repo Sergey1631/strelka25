@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/main.css') }}" /> 
+    <script src="/static/scripts/pageHelper.js"></script>
+</head>
+
+<body>    
+
+    <img id='main_background' src=/static/images/main_background.png>
+    <div class="header">
+        <p id="publicRoutesLink" class="publicRoutesLink" onclick="window.location.replace('/publicRoutes')">Публичные маршруты</p>
+        <p id="myRoutesLink" class="myRoutesLink" onclick="window.location.replace('/myRoutes')">Мои маршруты</p>
+        <p id="createRouteLink" class="createRouteLink" onclick="window.location.replace('/createRoute')">Создать маршрут</p>
+        <p id="importObjects" class="importObjects" onclick="pageHelper.importObjects()"> Импортировать объекты</p>
+    </div>
+    
+
+</body>
+</html>

@@ -4,28 +4,30 @@
 * {
     font-family: "Roboto";
 }
-#logo{
-    align-self: center;
-    height: 4vh;
-}
 
-.header *{
-    margin-top: auto;
-    margin-bottom: auto;
-    margin-left: 25px;
-    font-size: 16px;
+#main_background{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    z-index: -1;
 }
 
 .header{
-
     display: flex;
     flex-direction: row;
     height: fit-content;
-    width: 100%;
+    width: 60%;
     margin-right: 15px;
-
-    justify-content: flex-start;
-    margin-top: 15px;
+    border: 1px;
+    border-radius: 100px;
+    outline: #FFDB4D;
+    outline-width: 1px;
+    outline-style: solid;
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-bottom: 15px;
 }
 .header *:hover{
     cursor: pointer;
@@ -38,7 +40,10 @@
     margin-left: auto;
     margin-right: 10px;
 }
-
+.header *{
+    font-size: 18px;
+    margin-left: 25px;
+}
 
 body h1{
     font-style:italic;
@@ -83,7 +88,6 @@ input[type=password]{
 }
 
 p{
-    margin-bottom: 0px;
     font-size: 25px;
     color: white;
 }

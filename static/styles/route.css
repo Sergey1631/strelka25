@@ -11,6 +11,11 @@ body {
 
 /* ---------Шапка------ */
 
+#logo{
+    align-self: center;
+    height: 4vh;
+}
+
 .header{
     display: flex;
     flex-direction: row;

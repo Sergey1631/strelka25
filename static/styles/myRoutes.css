@@ -11,6 +11,11 @@ body {
 
 /* ---------Шапка------ */
 
+#logo{
+    align-self: center;
+    height: 4vh;
+}
+
 .header{
     display: flex;
     flex-direction: row;
@@ -65,7 +70,7 @@ p, b{
 
 .main .routeList{
     display:inline-block;
-    align-self: flex-start;
+    text-align: center;
     margin-right: 10px;
     margin-left: 5px;
     flex-direction: column;
@@ -75,15 +80,19 @@ p, b{
 }
 
 .main .routeList *{
-    
-    width: 100%;
+    margin-bottom: 8px;
+    font-weight: bold;
+    width: 90%;
     height: 45px;
-    background-color:rgb(0, 115, 255);
-    border: 5cm;
-    border-radius: 3px;
+    background-color: #000000;
+    outline-style: solid;
+    outline-width: 2px;
+    border: 1px;
+    border-radius: 100px;
     margin-top: 5px;
     font-size: 16px;
-    color: #ffffff;
+    color: #FFDB4D;
+    outline-color: #FFDB4D;
     cursor: pointer;
 }
 

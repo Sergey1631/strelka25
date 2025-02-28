@@ -14,6 +14,10 @@ app.config['routePhotosPath'] = 'static\\images\\routes\\'
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 
+@app.route('/')
+def main():
+    return render_template("/main.html")
+
 @app.route('/route/<id>')
 def route(id):
     connection = sqlite3.connect('database.db')

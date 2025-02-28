@@ -12,7 +12,7 @@ var changesList;
 var changesMode;
 var pathCoords;
 
-var photos;
+var photos = [];
 var currentPhotoId;
 
 var publicRoutes;// переменная для хранения всех публичных маршрутов
@@ -45,7 +45,6 @@ async function init(){
     }), objectManager = new ymaps.ObjectManager();
     myMap.geoObjects.add(objectManager);
     
-
 
     var publicRoutes = await getPublicRoutes();
     publicRoutes.forEach(route => {
