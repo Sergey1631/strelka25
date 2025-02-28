@@ -9,6 +9,7 @@ body h1{
     font-style:italic;
     color: #ffffff;
     margin-bottom: 0px;
+    text-align: center;
 }
 
 
@@ -36,7 +37,12 @@ input[type=password]{
 p{
     margin-bottom: 0px;
 }
-
+.ybg{
+    
+    background-color: #FFDB4D;
+    border-radius: 58px;
+    
+}
 
 .signupButton{
     background-color:#FFDB4D;
@@ -50,12 +56,17 @@ p{
     cursor: pointer;
 }
 .signupButton:hover {
-    background-color:rgb(34, 133, 255);
+    background-color:#ffe47a;
     
 }
 .signup{
     width: 350px;
-    
+    padding-bottom: 25px;
+    padding-left: 50px;
+    padding-right: 50px;
+    background-color: #000000;
+    border-radius: 57px;
+    padding-top: 25px;
 }
 .error{
     color: red;

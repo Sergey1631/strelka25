@@ -9,29 +9,32 @@
 </head>
 
 <body>
-    <h1>Авторизация</h1>
+    
     <script src="/static/scripts/auth/login.js"></script>
     <script src="/static/scripts/pageHelper.js"></script>
 
-    
-
-    <div class="login">
-        <div class="email">
-            <p>E-mail</p>
-            <input type="email" id="email"/>
+    <div class="ybg">
+        <h1>АВТОРИЗАЦИЯ</h1>
+        <div class="bg">
+            <div class="login">
+                <div class="email">
+                    <p>E-mail</p>
+                    <input type="email" id="email"/>
+                </div>
+            
+                <div class="password">
+                    <p>Пароль</p>
+                    <input type="password" id="password"/> 
+                </div>
+            </div> 
+            <div class="error">
+                <p id="errorText"></p>
+            </div>
+            <div class="buttons">
+                <button class="loginButton" onclick="login()"> Войти </button>
+                <button class="noAccount" onclick="redirectToSignup()"> Нет аккаунта? </button>
+            </div>
         </div>
-    
-        <div class="password">
-            <p>Пароль</p>
-            <input type="password" id="password"/> 
-        </div>
-    </div> 
-    <div class="error">
-        <p id="errorText"></p>
-    </div>
-    <div class="buttons">
-        <button class="loginButton" onclick="login()"> Войти </button>
-        <button class="noAccount" onclick="redirectToSignup()"> Нет аккаунта? </button>
     </div>
 </body>
 </html>

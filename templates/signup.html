@@ -9,29 +9,33 @@
 </head>
 
 <body>
-    <h1>Регистрация</h1>
-    <script src="/static/scripts/auth/signup.js"></script>
-    <script src="/static/scripts/pageHelper.js"></script>
-    <div class="signup">
-        <div class="email">
-            <p>E-mail</p>
-            <input type="text" id="email" name="email"/>
-        </div>
+    <div class="ybg">
+        <h1>Регистрация</h1>
+        <script src="/static/scripts/auth/signup.js"></script>
+        <script src="/static/scripts/pageHelper.js"></script>
+        <div class="signup">
+            <div class="email">
+                <p>E-mail</p>
+                <input type="text" id="email" name="email"/>
+            </div>
 
-        <div class="username">
-            <p>Имя пользователя</p>
-            <input type="text" id="username" name="email" /> 
-        </div>
+            <div class="username">
+                <p>Имя пользователя</p>
+                <input type="text" id="username" name="email" /> 
+            </div>
+        
+            <div class="password">
+                <p>Пароль</p>
+                <input type="password" id="password" name="email" /> 
+            </div>
+
+            <div class="error">
+                <p id="errorText"></p>
+            </div>
     
-        <div class="password">
-            <p>Пароль</p>
-            <input type="password" id="password" name="email" /> 
-        </div>
-    </div> 
-    <div class="error">
-        <p id="errorText"></p>
+            <button class="signupButton" onclick="signup()"> Создать аккаунт </button>
+        </div> 
+        
     </div>
-
-    <button class="signupButton" onclick="signup()"> Создать аккаунт </button>
 </body>
 </html>
